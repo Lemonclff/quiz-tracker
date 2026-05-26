@@ -472,12 +472,12 @@ function checkAnswer(index) {
 function sendToSheet(entry) {
   fetch(SCRIPT_URL, {
     method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
     body: JSON.stringify(entry),
   })
-    .then(() => debugLog("✅ 已傳送到 Google Sheets"))
-    .catch((err) => debugLog(`❌ 傳送失敗：${err}`));
+    .then((r) => r.text())
+    .then((txt) => debugLog("✅ Sheets 回應：" + txt))
+    .catch((err) => debugLog("❌ 傳送失敗：" + err));
 }
 
 // ═══════════════════════════════════════════════════════════
