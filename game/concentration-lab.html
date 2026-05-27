@@ -675,7 +675,9 @@ async function submitPotion(){
   showResultModal(isCorrect,isEmpty,scoreChange,timeSpent,q);
 
   // 組 payload
+  var rid=ts()+'-'+Math.random().toString(36).slice(2,8);
   var payload={
+    requestId:rid,
     timestamp:ts(), studentId:STATE.studentId, gameTitle:GAME_SETTING.gameTitle,
     levelNo:lv.levelNo, questionNo:q.questionNo, difficulty:lv.difficulty, levelType:lv.levelType,
     target:q.target, chosenMaterials:chosenLabels.join(', '), correctAnswers:q.correctAnswers.join(', '),
@@ -705,6 +707,7 @@ function handleTimeout(){
   STATE.score+=lv.timeoutPenalty;
 
   var payload={
+    requestId:ts()+'-'+Math.random().toString(36).slice(2,8),
     timestamp:ts(), studentId:STATE.studentId, gameTitle:GAME_SETTING.gameTitle,
     levelNo:lv.levelNo, questionNo:q.questionNo, difficulty:lv.difficulty, levelType:lv.levelType,
     target:q.target, chosenMaterials:'(超時)', correctAnswers:q.correctAnswers.join(', '),
@@ -779,7 +782,11 @@ function advanceAfterSubmit(){
 // 同步傳輸
 async function trySend(payload){
   if(!WEB_APP_URL||WEB_APP_URL.includes('YOUR_')){console.log('[測試]略過傳輸');return{status:'success'};}
-  try{var r=await fetch(WEB_APP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});if(!r.ok)return null;return await r.json();}catch(e){return null;}
+  try{
+    var r=await fetch(WEB_APP_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+    // no-cors 模式下無法讀取回應，只要沒拋例外即視為成功
+    return {status:'success'};
+  }catch(e){console.warn('[Sync]失敗:',e.message);return null;}
 }
 async function sendWithRetry(payload,max,interval){
   for(var i=1;i<=max;i++){var r=await trySend(payload);if(r&&r.status==='success')return true;if(i<max)await sleep(interval);}
@@ -788,7 +795,7 @@ async function sendWithRetry(payload,max,interval){
 async function syncPayload(payload){
   addPending(payload);
   showSyncOverlay();
-  var ok=await sendWithRetry(payload,5,2000);
+  var ok=await sendWithRetry(payload,3,2000);
   if(ok){removePending(payload);}else{alert('⚠️ 網路擁擠，魔法傳輸受阻。\n數據已安全暫存，後續自動補傳。');}
   hideSyncOverlay();
 }
@@ -946,7 +953,7 @@ setInterval(function(){
 
 <!--
 ╔══════════════════════════════════════════════════════════════════════════╗
-║                    Google Apps Script 後端程式碼 (21 欄位)                  ║
+║                    Google Apps Script 後端程式碼 (22 欄位，含 requestId 去重) ║
 ║               請將以下程式碼完整複製到 GAS 編輯器中部署                       ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 
@@ -958,14 +965,14 @@ setInterval(function(){
 
 
 ═══════════════════════════════════════════════════════════════════════════
-  Sheets 試算表結構（第一列為標題，共 21 欄）
+  Sheets 試算表結構（第一列為標題，共 22 欄）
 
-  A: timestamp        B: studentId       C: gameTitle       D: levelNo
-  E: questionNo       F: difficulty      G: levelType       H: target
-  I: chosenMaterials  J: correctAnswers  K: isCorrect       L: scoreChange
-  M: totalScore       N: timeTaken       O: timeLimit       P: bonusEarned
-  Q: hintUsed         R: attemptType     S: materialsPlaced T: isTimeout
-  U: rank
+  A: requestId        B: timestamp        C: studentId       D: gameTitle
+  E: levelNo          F: questionNo       G: difficulty      H: levelType
+  I: target           J: chosenMaterials  K: correctAnswers  L: isCorrect
+  M: scoreChange      N: totalScore       O: timeTaken       P: timeLimit
+  Q: bonusEarned      R: hintUsed         S: attemptType     T: materialsPlaced
+  U: isTimeout        V: rank
 
 
 ═══════════════════════════════════════════════════════════════════════════
@@ -1001,6 +1008,14 @@ var CONFIG = {
 function doPost(e) {
   try {
     var payload = JSON.parse(e.postData.contents);
+
+    // 🔑 重複檢查：相同 requestId 不再寫入
+    if (payload.requestId && isDuplicateRequest(payload.requestId)) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ status: 'success', deduplicated: true }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
     appendToSheet(payload);
     appendToDriveJson(payload);
     return ContentService
@@ -1020,29 +1035,24 @@ function doGet(e) {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// 路徑 A：即時寫入 Google 試算表 (21 欄)
+// 路徑 A：即時寫入 Google 試算表 (22 欄，含 requestId)
 // ═══════════════════════════════════════════════════════════════════
 function appendToSheet(data) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.sheetName);
+  var headers = ['requestId','timestamp','studentId','gameTitle','levelNo','questionNo',
+      'difficulty','levelType','target','chosenMaterials','correctAnswers',
+      'isCorrect','scoreChange','totalScore','timeTaken','timeLimit',
+      'bonusEarned','hintUsed','attemptType','materialsPlaced','isTimeout','rank'];
   if (!sheet) {
     sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(CONFIG.sheetName);
-    sheet.appendRow([
-      'timestamp','studentId','gameTitle','levelNo','questionNo',
-      'difficulty','levelType','target','chosenMaterials','correctAnswers',
-      'isCorrect','scoreChange','totalScore','timeTaken','timeLimit',
-      'bonusEarned','hintUsed','attemptType','materialsPlaced','isTimeout','rank'
-    ]);
+    sheet.appendRow(headers);
   }
   if (sheet.getLastRow() === 0) {
-    sheet.appendRow([
-      'timestamp','studentId','gameTitle','levelNo','questionNo',
-      'difficulty','levelType','target','chosenMaterials','correctAnswers',
-      'isCorrect','scoreChange','totalScore','timeTaken','timeLimit',
-      'bonusEarned','hintUsed','attemptType','materialsPlaced','isTimeout','rank'
-    ]);
+    sheet.appendRow(headers);
   }
 
   sheet.appendRow([
+    data.requestId        || '',
     data.timestamp        || '',
     data.studentId        || '',
     data.gameTitle        || '',
@@ -1067,7 +1077,7 @@ function appendToSheet(data) {
   ]);
 
   autoSortSheet(sheet);
-  refreshStudentSummary();  // 自動更新彙整表
+  refreshStudentSummary();
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -1166,16 +1176,31 @@ function getOrCreateJsonFile(folder, name) {
 function autoSortSheet(sheet) {
   var lastRow = sheet.getLastRow();
   if (lastRow <= 2) return;
-  sheet.getRange(2, 1, lastRow-1, 21).sort({ column: 1, ascending: false });
+  sheet.getRange(2, 1, lastRow-1, 22).sort({ column: 2, ascending: false }); // 依 timestamp (B欄) 降序
 }
 function clearAllData() {
   var s = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.sheetName);
-  if (s && s.getLastRow()>1) s.getRange(2,1,s.getLastRow()-1,21).clearContent();
+  if (s && s.getLastRow()>1) s.getRange(2,1,s.getLastRow()-1,22).clearContent();
   var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.summarySheetName);
   if (ss && ss.getLastRow()>1) ss.getRange(2,1,ss.getLastRow()-1,11).clearContent();
   var f = getOrCreateFolder(CONFIG.folderName);
   var jf = getOrCreateJsonFile(f, CONFIG.jsonFileName);
   jf.setContent('[]');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// 🔑 重複請求檢查：查詢現有資料中是否已存在相同 requestId
+// ═══════════════════════════════════════════════════════════════════
+function isDuplicateRequest(requestId) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.sheetName);
+  if (!sheet || sheet.getLastRow() <= 1) return false;
+  // 只檢查最近 200 列以維持效能
+  var startRow = Math.max(2, sheet.getLastRow() - 199);
+  var data = sheet.getRange(startRow, 1, sheet.getLastRow() - startRow + 1, 1).getValues();
+  for (var i = 0; i < data.length; i++) {
+    if (data[i][0] === requestId) return true;
+  }
+  return false;
 }
 
 ═══════════════════════════════════════════════════════════════════════════
