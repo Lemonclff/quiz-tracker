@@ -104,11 +104,10 @@
 #### 2b. 貼上後端程式碼
 
 1. 在編輯器中**刪除所有預設文字**（全選 → Delete）
-2. 打開本專案的 `game/concentration-lab.html`
-3. 捲到**檔案最底部**，找到 `<!-- Google Apps Script 後端程式碼 -->` 註解區塊
-4. 複製從 `// ---- 設定區 ----` 到 `GAS 程式碼結束` 之間的**所有程式碼**
-5. 在 Apps Script 編輯器中貼上（Ctrl+V）
-6. 點上方工具列 💾 **儲存**圖示
+2. 打開本專案的 `backend/Code.gs`
+3. **全選複製**（Ctrl+A → Ctrl+C）所有程式碼
+4. 在 Apps Script 編輯器中貼上（Ctrl+V）
+5. 點上方工具列 💾 **儲存**圖示
 
 #### 2c. 部署為網頁應用程式
 
@@ -253,9 +252,9 @@ GAS 同時會在 Google Drive 建立 `魔法學園_數據備份` 資料夾，內
 
 | 檔案 | 說明 |
 |------|------|
-| `game/concentration-lab.html` | **魔藥煉成所遊戲本體**（HTML/CSS/JS 單檔），結尾附完整 GAS 後端程式碼 |
+| `game/concentration-lab.html` | **魔藥煉成所遊戲本體**（HTML/CSS/JS 單檔） |
+| `backend/Code.gs` | **GAS 後端程式碼**（22 欄 + requestId 去重 + 學生總分自動彙整），全選複製即可部署 |
 | `game/magic-school.html` | 舊版濃度大挑戰（9 欄簡易版） |
-| `backend/Code.gs` | 舊版 GAS 後端（對應 magic-school.html） |
 | `README.md` | 本文件 |
 
 ---
