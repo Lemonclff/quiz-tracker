@@ -806,12 +806,12 @@ function stopQuestionTimer() {
     STATE.timerHandle = null;
   }
   const elapsedMs = Date.now() - STATE.questionStartTime;
-  return Math.round(elapsedMs / 1000); // 回傳整數秒
+  return parseFloat((elapsedMs / 1000).toFixed(3)); // 回傳秒數，精確到毫秒
 }
 
 /** 取得目前已經過的秒數 (用於即時顯示，不停止計時器) */
 function getElapsedSeconds() {
-  return Math.round((Date.now() - STATE.questionStartTime) / 1000);
+  return parseFloat(((Date.now() - STATE.questionStartTime) / 1000).toFixed(3));
 }
 
 /* ╔══════════════════════════════════════════════════════════╗
