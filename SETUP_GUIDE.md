@@ -126,7 +126,7 @@ https://YOUR_USERNAME.github.io/quiz-tracker/game/concentration-lab.html
 
 ## ✅ 驗證
 
-1. 打開遊戲網頁，輸入座號 `01-王小明`
+1. 打開遊戲網頁，輸入班級座號 `1C32`
 2. 答幾題
 3. 回到 Google 試算表 → 重新整理 (F5) → 應該看到 12 欄資料一行一行出現
 4. 到 Google Drive → `魔法學園_數據備份` 資料夾 → 打開 `all_students_logs.json` → 應該看到陣列累積的完整紀錄

@@ -59,7 +59,7 @@ git add game/concentration-lab.html && git commit -m "update WEB_APP_URL" && git
 
 ### 4. 開始使用
 
-學生打開遊戲網址 → 輸入座號-姓名（如 `12-林小華`）→ 開始答題，數據自動記錄。
+學生打開遊戲網址 → 輸入班級座號（如 `1C32`）→ 開始答題，數據自動記錄。
 
 ---
 

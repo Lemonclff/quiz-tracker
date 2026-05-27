@@ -693,7 +693,7 @@ const LS_GAME_STATE   = 'cl_gameState';
    ║  遊戲全域狀態 (STATE)                                    ║
    ╚══════════════════════════════════════════════════════════╝ */
 const STATE = {
-  studentId:           '',     // e.g. "12-林小華"
+  studentId:           '',     // e.g. "1C32" (班級+座號)
   currentLevelIdx:     0,      // GAME_SETTING.levels 的索引
   currentQuestionIdx:  0,      // 當前關卡內 questions 的索引
   questionStartTime:   0,      // Date.now() 毫秒
@@ -950,11 +950,11 @@ function showLoginScreen() {
       <div class="overlay-card">
         <div style="font-size:48px;margin-bottom:8px;">🧙‍♂️</div>
         <h2>魔法學園入學登記</h2>
-        <p class="overlay-subtitle">請輸入你的座號與姓名，例如：<strong>12-林小華</strong></p>
+        <p class="overlay-subtitle">請輸入你的班級與座號，例如：<strong>1C32</strong></p>
         <input type="text" id="login-input"
-               placeholder="座號-姓名 (例: 12-林小華)"
-               autocomplete="off" maxlength="30">
-        <p class="error-msg" id="login-error">請輸入座號與姓名（格式：座號-姓名）</p>
+               placeholder="班級座號 (例: 1C32)"
+               autocomplete="off" maxlength="10">
+        <p class="error-msg" id="login-error">請輸入班級座號（格式如：1C32，數字+班級字母+座號）</p>
         <button class="btn btn-gold" id="login-btn">🏰 進入魔法學園</button>
       </div>
     </div>`;
@@ -964,8 +964,9 @@ function showLoginScreen() {
   const errEl   = document.getElementById('login-error');
 
   function doLogin() {
-    const val = input.value.trim();
-    if (!val || !val.includes('-') || val.split('-').length < 2 || val.split('-')[1].trim() === '') {
+    const val = input.value.trim().toUpperCase();
+    // 驗證格式：數字 + 一個英文字母（班級） + 數字（座號），如 1C32
+    if (!/^\d+[A-Z]\d+$/.test(val)) {
       input.classList.add('error-shake');
       errEl.classList.add('show');
       setTimeout(() => {
