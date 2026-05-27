@@ -1,1259 +1,1052 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>魔法學園：濃度調配課</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>魔法學園 · 魔藥煉成所</title>
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&display=swap');
 
-    :root {
-      --bg-deep: #0a0718;
-      --bg-card: rgba(30,15,55,0.9);
-      --border-magic: #7b5cac;
-      --text-primary: #f0e6d2;
-      --text-secondary: #d4c5a9;
-      --text-muted: #9a8cba;
-      --gold: #f5d742;
-      --gold-glow: #fae672;
-      --purple: #8a4fcf;
-      --purple-glow: #b77eff;
-      --green: #4caf7c;
-      --green-glow: #6ddb9e;
-      --red: #c94b4b;
-      --red-glow: #e87373;
-      --blue: #667eea;
-      --cyan: #5bc0be;
-      --font-magic: 'Cinzel Decorative', 'Noto Serif TC', serif;
-      --font-ui: 'Noto Serif TC', serif;
-      --radius-sm: 6px;
-      --radius-md: 8px;
-      --radius-lg: 20px;
-    }
+  :root {
+    --bg-deep: #0a0718;
+    --border-magic: #7b5cac;
+    --text-primary: #f0e6d2;
+    --text-secondary: #d4c5a9;
+    --text-muted: #9a8cba;
+    --gold: #f5d742;
+    --purple: #8a4fcf;
+    --purple-glow: #b77eff;
+    --green: #4caf7c;
+    --red: #c94b4b;
+    --font-magic: 'Cinzel Decorative', 'Noto Serif TC', serif;
+    --font-ui: 'Noto Serif TC', serif;
+  }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      font-family: var(--font-ui);
-      background: #0a0718;
-      background-image:
-        radial-gradient(ellipse at 20% 30%, rgba(80,40,140,0.6) 0%, rgba(20,10,45,0.95) 70%),
-        radial-gradient(ellipse at 85% 70%, rgba(140,70,200,0.3) 0%, transparent 60%),
-        repeating-linear-gradient(45deg, rgba(100,60,180,0.06) 0px, rgba(100,60,180,0.06) 2px, transparent 2px, transparent 8px);
-      color: var(--text-primary);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 16px;
-      overflow-x: hidden;
-      user-select: none;
-    }
+  body {
+    font-family: var(--font-ui);
+    background: #0a0718;
+    background-image:
+      radial-gradient(ellipse at 20% 30%, rgba(80,40,140,0.6) 0%, rgba(20,10,45,0.95) 70%),
+      radial-gradient(ellipse at 85% 70%, rgba(140,70,200,0.3) 0%, transparent 60%),
+      repeating-linear-gradient(45deg, rgba(100,60,180,0.06) 0px, rgba(100,60,180,0.06) 2px, transparent 2px, transparent 8px);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 20px; overflow-x: hidden; user-select: none;
+  }
 
-    .bg-library { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.3; }
-    .bookshelf-left, .bookshelf-right { position: absolute; top: 0; width: 90px; height: 100%; background: repeating-linear-gradient(0deg, #2c1a2c 0px, #2c1a2c 4px, #3e2a3e 4px, #3e2a3e 8px, #2c1a2c 8px, #2c1a2c 32px, #1e0e2a 32px, #1e0e2a 34px, #2c1a2c 34px); opacity: 0.45; }
-    .bookshelf-left { left: 0; } .bookshelf-right { right: 0; }
+  /* 背景裝飾 */
+  .bg-library { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.3; }
+  .bookshelf-left, .bookshelf-right { position: absolute; top: 0; width: 90px; height: 100%; background: repeating-linear-gradient(0deg, #2c1a2c 0px, #2c1a2c 4px, #3e2a3e 4px, #3e2a3e 8px, #2c1a2c 8px, #2c1a2c 32px, #1e0e2a 32px, #1e0e2a 34px, #2c1a2c 34px); opacity: 0.45; }
+  .bookshelf-left { left: 0; } .bookshelf-right { right: 0; }
+  .starfield { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+  .star { position: absolute; background: rgba(255,240,200,0.8); border-radius: 50%; box-shadow: 0 0 10px 2px rgba(210,180,255,0.6); animation: starTwinkle 4s infinite alternate; }
+  @keyframes starTwinkle { 0% { opacity: 0.2; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
 
-    .starfield { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-    .star { position: absolute; background: rgba(255,240,200,0.8); border-radius: 50%; box-shadow: 0 0 10px 2px rgba(210,180,255,0.6); animation: starTwinkle 4s infinite alternate; }
-    @keyframes starTwinkle { 0% { opacity: 0.2; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
+  /* 主容器 */
+  .game-wrapper { position: relative; z-index: 15; width: 100%; max-width: 1050px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
 
-    #app { width: 100%; max-width: 720px; margin: 0 auto; position: relative; z-index: 15; }
+  /* Header */
+  .header {
+    width: 100%; display: flex; justify-content: space-between; align-items: center;
+    background: linear-gradient(180deg, rgba(30,15,55,0.85) 0%, rgba(20,8,40,0.95) 100%);
+    padding: 14px 24px; border-radius: 8px; border: 2px solid #6a4a9a; gap: 16px; flex-wrap: wrap; backdrop-filter: blur(2px);
+  }
+  .customer-area { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 280px; }
+  .avatar { font-size: 48px; filter: drop-shadow(0 0 12px rgba(180,140,220,0.7)); animation: gentleFloat 3s ease-in-out infinite; }
+  @keyframes gentleFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+  .bubble-container { flex: 1; }
+  .bubble {
+    background: rgba(30,15,50,0.85); padding: 10px 18px; border-radius: 8px; border: 2px solid #7b5cac;
+    font-size: 18px; font-weight: 700; color: #f0e6d2; box-shadow: 0 0 20px rgba(100,50,180,0.35); position: relative;
+  }
+  .bubble::before { content: ''; position: absolute; left: -14px; top: 50%; transform: translateY(-50%); border-width: 8px 14px 8px 0; border-style: solid; border-color: transparent #7b5cac transparent transparent; }
+  .target-val { color: #f0bcff; font-size: 30px; letter-spacing: 2px; text-shadow: 0 0 18px #b77eff; }
+  .time-bar-outer { width: 100%; height: 14px; background: #1a1025; border: 2px solid #5b3d80; border-radius: 7px; overflow: hidden; margin-top: 6px; position: relative; }
+  .time-bar-inner { height: 100%; background: linear-gradient(90deg, #9b4dff, #cc77ff); transition: width 0.1s linear; border-radius: 5px; }
+  .time-bar-text { position: absolute; top: 0; left: 0; right: 0; text-align: center; font-size: 11px; font-weight: bold; line-height: 14px; color: #e8dcc8; }
 
-    .top-bar {
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
-      margin-bottom: 18px; padding: 14px 20px;
-      background: linear-gradient(180deg, rgba(30,15,55,0.85) 0%, rgba(20,8,40,0.95) 100%);
-      border: 2px solid var(--border-magic); border-radius: var(--radius-sm); backdrop-filter: blur(2px);
-    }
-    .top-bar .game-icon { font-size: 30px; filter: drop-shadow(0 0 10px rgba(180,140,220,0.7)); animation: gentleFloat 3s ease-in-out infinite; }
-    @keyframes gentleFloat { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-6px); } }
-    .top-bar .game-title-text {
-      font-family: var(--font-magic); font-size: 20px; font-weight: 900; letter-spacing: 2px;
-      color: #ffecb3; text-shadow: 0 0 12px rgba(180,140,220,0.5);
-    }
-    .top-bar .student-badge {
-      font-size: 13px; color: #e0d6c0; background: rgba(90,50,130,0.5);
-      border: 1.5px solid rgba(160,140,200,0.4); border-radius: 20px; padding: 5px 14px;
-      display: flex; align-items: center; gap: 4px; font-weight: 600;
-    }
+  .info-panel { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+  .level-board { font-size: 17px; background: rgba(20,10,35,0.8); color: #f5d742; padding: 5px 16px; border-radius: 6px; border: 2px solid #7b5cac; font-weight: 700; }
+  .score-board { font-size: 22px; background: rgba(15,5,25,0.9); color: #f5d742; padding: 8px 18px; border-radius: 6px; border: 2px solid #8a6ac0; display: flex; align-items: baseline; gap: 8px; }
+  .rank-badge { font-size: 0.75em; background: rgba(90,50,130,0.7); padding: 2px 10px; border-radius: 20px; }
 
-    .progress-section { margin-bottom: 18px; }
-    .level-header {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
-      flex-wrap: wrap; gap: 8px; background: rgba(25,12,45,0.7);
-      border: 2px solid var(--border-magic); border-radius: var(--radius-sm); padding: 10px 16px;
-    }
-    .level-tag { display: flex; align-items: center; gap: 10px; }
-    .level-number {
-      font-family: var(--font-magic); font-size: 17px; font-weight: 900;
-      color: var(--gold); text-shadow: 0 0 10px rgba(245,215,66,0.4); letter-spacing: 1px;
-    }
-    .difficulty-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px; letter-spacing: 0.5px; }
-    .difficulty-badge.easy { background: rgba(76,175,124,0.15); color: var(--green); border: 1px solid rgba(76,175,124,0.35); }
-    .difficulty-badge.medium { background: rgba(245,215,66,0.15); color: var(--gold); border: 1px solid rgba(245,215,66,0.35); }
-    .difficulty-badge.hard { background: rgba(201,75,75,0.15); color: var(--red); border: 1px solid rgba(201,75,75,0.35); }
-    .level-type-tag { font-size: 12px; color: var(--cyan); background: rgba(91,192,190,0.1); border: 1px solid rgba(91,192,190,0.25); border-radius: var(--radius-sm); padding: 3px 10px; font-weight: 600; }
-    .question-progress-text { font-size: 13px; color: var(--text-secondary); font-weight: 600; }
-    .progress-bar-outer { width: 100%; height: 14px; background: #1a1025; border: 2px solid #5b3d80; border-radius: 7px; overflow: hidden; margin-bottom: 4px; }
-    .progress-bar-inner { height: 100%; border-radius: 5px; background: linear-gradient(90deg, #9b4dff, #cc77ff); transition: width 0.5s; box-shadow: 0 0 14px rgba(155,77,255,0.5); }
-    .total-progress-label { font-size: 11px; color: var(--text-muted); text-align: right; margin-top: 2px; }
+  /* 主雙欄 */
+  .main-container { display: flex; width: 100%; gap: 28px; flex: 1; flex-wrap: wrap; }
+  .left-panel {
+    flex: 1.2; min-width: 300px; display: flex; flex-direction: column; align-items: center; gap: 10px;
+    background: rgba(20,10,35,0.35); border: 2px dashed #7b5cac; border-radius: 28px; padding: 14px; backdrop-filter: blur(3px);
+  }
+  .hint-area {
+    width: 100%; background: rgba(10,5,25,0.85); border-radius: 16px; border-left: 6px solid #f5bc70;
+    padding: 14px 16px; backdrop-filter: blur(4px); color: #fff0db; transition: 0.2s; display: none;
+  }
+  .hint-area.visible { display: block; }
+  .hint-title { font-weight: bold; color: #ffde9e; letter-spacing: 2px; margin-bottom: 8px; font-size: 18px; display: flex; align-items: center; gap: 6px; }
+  .hint-content { line-height: 1.7; font-size: 16px; border-top: 1px dashed #aa88dd; padding-top: 8px; margin-top: 4px; }
 
-    /* 羊皮紙題目卡片 */
-    .question-card {
-      background: linear-gradient(180deg, rgba(245,230,202,0.12), rgba(232,213,181,0.08));
-      border: 3px solid rgba(196,166,122,0.5); border-radius: var(--radius-lg);
-      padding: 28px 24px; margin-bottom: 20px; position: relative; overflow: hidden;
-      transition: border-color 0.4s, box-shadow 0.4s; backdrop-filter: blur(1px);
-    }
-    .question-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--purple), var(--gold), var(--cyan)); opacity: 0.7; }
-    .question-card.correct-flash { border-color: var(--green); box-shadow: 0 0 40px rgba(76,175,124,0.35); }
-    .question-card.wrong-flash { border-color: var(--red); box-shadow: 0 0 40px rgba(201,75,75,0.35); }
-    .question-text { font-size: 18px; line-height: 1.8; margin-bottom: 24px; color: #fff8ed; font-weight: 500; }
-    .question-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
-    .q-no-badge { font-size: 13px; font-weight: 700; color: var(--purple-glow); background: rgba(138,79,207,0.15); padding: 3px 10px; border-radius: var(--radius-sm); border: 1px solid rgba(138,79,207,0.3); }
-    .target-badge { font-size: 12px; color: var(--gold); background: rgba(245,215,66,0.1); border: 1.5px solid rgba(245,215,66,0.3); border-radius: var(--radius-sm); padding: 3px 10px; }
+  /* 魔藥瓶 */
+  .flask-container { position: relative; width: 300px; height: 340px; margin-top: 5px; }
+  .flask-neck { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 44px; height: 90px; background: rgba(180,160,210,0.25); border: 3px solid rgba(160,140,200,0.5); border-bottom: none; border-radius: 18px 18px 0 0; z-index: 2; backdrop-filter: blur(2px); }
+  .flask-rim { position: absolute; top: -6px; left: 50%; transform: translateX(-50%); width: 56px; height: 12px; background: rgba(210,195,230,0.5); border: 3px solid rgba(180,160,210,0.6); border-radius: 50%; z-index: 3; box-shadow: 0 0 12px rgba(200,160,255,0.5); }
+  .flask-body { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 300px; height: 260px; background: radial-gradient(ellipse at 40% 35%, rgba(60,20,110,0.4), rgba(30,10,70,0.7)); border: 3px solid rgba(170,150,210,0.6); border-radius: 50%; box-shadow: 0 0 55px rgba(140,80,210,0.5), inset 0 0 30px rgba(0,0,0,0.3); overflow: hidden; z-index: 1; }
+  .flask-liquid { position: absolute; bottom: 8%; left: 10%; width: 80%; height: 65%; background: radial-gradient(ellipse at 50% 40%, #8a4fcf, #3c1b70); border-radius: 50%; z-index: 0; animation: liquidWobble 2.5s ease-in-out infinite; box-shadow: inset 0 0 35px rgba(210,170,255,0.5), 0 0 20px rgba(160,100,230,0.4); }
+  @keyframes liquidWobble { 0% { transform: rotate(0deg) translateX(0); } 25% { transform: rotate(1deg) translateX(3px); } 75% { transform: rotate(-1deg) translateX(-3px); } 100% { transform: rotate(0deg) translateX(0); } }
+  .potion-board { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 280px; height: 240px; z-index: 5; pointer-events: none; }
+  .potion-slot {
+    position: absolute; width: 70px; height: 70px; border: 2px dashed rgba(180,150,210,0.4); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 14px; color: rgba(200,180,220,0.5);
+    transition: all 0.2s; cursor: pointer; pointer-events: auto;
+  }
+  .potion-slot.filled { border-color: rgba(245,215,66,0.6); border-style: solid; color: var(--gold); background: rgba(245,215,66,0.08); }
+  .potion-slot:hover { border-color: var(--purple-glow); box-shadow: 0 0 15px rgba(168,85,247,0.3); }
+  .potion-slot .slot-emoji { font-size: 28px; }
+  .potion-slot .slot-label { font-size: 12px; font-weight: 700; position: absolute; bottom: 4px; }
 
-    .options-grid { display: flex; flex-direction: column; gap: 10px; }
-    .option-btn {
-      display: flex; align-items: center; gap: 14px; width: 100%; padding: 15px 20px;
-      font-size: 16px; font-family: var(--font-ui); color: #f0e6d2;
-      background: rgba(40,20,65,0.6); border: 2px solid rgba(123,92,172,0.5);
-      border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s; text-align: left;
-    }
-    .option-btn:hover:not(.disabled) { background: rgba(138,79,207,0.2); border-color: var(--purple); box-shadow: 0 0 20px rgba(138,79,207,0.3); transform: translateX(4px); }
-    .option-btn .option-letter {
-      display: flex; align-items: center; justify-content: center; width: 34px; height: 34px;
-      border-radius: 50%; font-weight: 700; font-size: 14px; flex-shrink: 0;
-      background: rgba(255,255,255,0.06); border: 1.5px solid rgba(160,140,200,0.3); color: var(--text-secondary); font-family: var(--font-magic);
-    }
-    .option-btn.correct-choice { background: rgba(76,175,124,0.2) !important; border-color: var(--green) !important; box-shadow: 0 0 25px rgba(76,175,124,0.4) !important; }
-    .option-btn.correct-choice .option-letter { background: var(--green); border-color: var(--green); color: #fff; }
-    .option-btn.wrong-choice { background: rgba(201,75,75,0.2) !important; border-color: var(--red) !important; box-shadow: 0 0 25px rgba(201,75,75,0.4) !important; }
-    .option-btn.wrong-choice .option-letter { background: var(--red); border-color: var(--red); color: #fff; }
-    .option-btn.disabled { pointer-events: none; opacity: 0.7; }
+  .reset-btn {
+    background: linear-gradient(135deg, #b5a9ff, #8ec5fc); border: none; color: #2d1f4a;
+    font-size: 16px; font-weight: bold; padding: 8px 24px; border-radius: 50px; cursor: pointer;
+    font-family: var(--font-magic); box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: 0.1s;
+    display: flex; align-items: center; gap: 8px; margin-top: 8px;
+  }
+  .reset-btn:hover { transform: scale(1.02); background: linear-gradient(135deg, #c7bdff, #a4dcff); }
 
-    .hint-section { margin-top: 18px; text-align: center; }
-    .hint-toggle {
-      display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: #d4c5a9;
-      background: rgba(30,15,50,0.6); border: 2px dashed rgba(123,92,172,0.5);
-      border-radius: 25px; padding: 9px 20px; cursor: pointer; transition: all 0.2s;
-      font-family: var(--font-ui); font-weight: 600;
-    }
-    .hint-toggle:hover { color: var(--purple-glow); border-color: var(--purple); background: rgba(138,79,207,0.15); }
-    .hint-toggle.used { color: var(--gold); border-color: var(--gold); background: rgba(245,215,66,0.1); }
-    .hint-content {
-      margin-top: 12px; padding: 14px 18px; background: rgba(10,5,25,0.85);
-      border-left: 6px solid #f5bc70; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-      font-size: 15px; color: #fff0db; line-height: 1.7; display: none;
-      animation: fadeInDown 0.3s ease; text-align: left;
-    }
-    .hint-content.visible { display: block; }
-    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+  /* 右側材料架 */
+  .right-panel {
+    width: 340px; min-width: 300px; background: linear-gradient(180deg, rgba(30,15,50,0.9), rgba(25,10,45,0.97));
+    border: 3px solid #7b5cac; border-radius: 18px; padding: 16px; display: flex; flex-direction: column; backdrop-filter: blur(2px);
+  }
+  .tray-title {
+    text-align: center; font-size: 22px; font-weight: 900; color: #ffecb3;
+    background: rgba(30,15,55,0.8); padding: 10px; border: 2px solid #9b7acf;
+    margin-bottom: 16px; border-radius: 14px; letter-spacing: 2px; font-family: var(--font-magic);
+  }
+  .tray {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    justify-content: center; gap: 14px 10px; min-height: 280px; margin-bottom: 14px;
+  }
+  .material-item {
+    background: transparent; border: 2px solid rgba(123,92,172,0.4); cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; padding: 8px 4px; border-radius: 12px;
+    transition: all 0.15s; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+  }
+  .material-item:hover { transform: scale(1.08); border-color: var(--purple-glow); box-shadow: 0 0 16px rgba(200,170,255,0.5); }
+  .material-item.selected { border-color: var(--gold); background: rgba(245,215,66,0.12); box-shadow: 0 0 18px rgba(245,215,66,0.3); }
+  .material-item.used { opacity: 0.35; pointer-events: none; }
+  .material-item .mat-emoji { font-size: 36px; }
+  .material-item .mat-label {
+    background: rgba(25,12,45,0.9); color: #fae672; font-size: 16px; font-weight: bold;
+    padding: 4px 8px; border: 2px solid #b494f0; border-radius: 20px; letter-spacing: 1px; margin-top: 4px;
+  }
+  .confirm-btn {
+    background: linear-gradient(180deg, #8a4fd0, #5a2a9a); color: #fdf6e3; border: 3px solid #b28eff;
+    padding: 14px; font-size: 20px; font-weight: 900; border-radius: 50px; cursor: pointer;
+    box-shadow: 0 0 30px rgba(150,100,240,0.55); margin-top: auto;
+    font-family: var(--font-magic); transition: 0.1s; letter-spacing: 2px;
+  }
+  .confirm-btn:hover { background: linear-gradient(180deg, #a162e6, #7b3bc2); transform: translateY(-2px); box-shadow: 0 0 40px rgba(150,100,240,0.7); }
+  .confirm-btn:disabled { opacity: 0.4; pointer-events: none; }
 
-    .feedback-banner { text-align: center; padding: 14px; border-radius: var(--radius-md); font-weight: 700; font-size: 16px; margin-top: 18px; display: none; animation: fadeInDown 0.3s ease; }
-    .feedback-banner.show { display: block; }
-    .feedback-banner.correct { background: rgba(76,175,124,0.15); border: 2px solid rgba(76,175,124,0.4); color: var(--green-glow); }
-    .feedback-banner.wrong { background: rgba(201,75,75,0.15); border: 2px solid rgba(201,75,75,0.4); color: var(--red-glow); }
+  /* Modal (羊皮紙) */
+  .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(8px); }
+  .modal-overlay.show { display: flex; }
+  .parchment {
+    background: linear-gradient(180deg, #f5e6ca, #e8d5b5); border: 3px solid #c4a67a; border-radius: 6px;
+    text-align: center; max-width: 600px; width: 90%; color: #3e2723; box-shadow: 0 0 70px rgba(255,215,150,0.6); padding: 32px 26px;
+  }
+  .parchment h2 { font-family: var(--font-magic); font-size: 28px; margin-bottom: 14px; color: #4a148c; letter-spacing: 2px; }
+  .parchment .subtitle { font-size: 16px; line-height: 1.5; margin-bottom: 18px; color: #5d4037; }
+  .parchment input {
+    font-size: 24px; padding: 12px 20px; text-align: center; border: 3px solid #7b4da0; background: #fff9ea;
+    border-radius: 40px; width: 80%; margin: 16px auto; display: block; font-family: monospace; letter-spacing: 6px; outline: none;
+  }
+  .parchment input:focus { border-color: #8a4fcf; box-shadow: 0 0 15px rgba(138,79,207,0.3); }
+  .parchment .err { color: #b71c1c; font-weight: bold; font-size: 14px; min-height: 24px; margin: 6px 0; }
+  .parchment .btn-group { display: flex; justify-content: center; gap: 12px; margin-top: 10px; flex-wrap: wrap; }
+  .parchment .modal-btn {
+    background: linear-gradient(180deg, #5d3a1a, #3e2723); color: #e0c76e; border: 3px solid #8d6e4c;
+    padding: 10px 24px; font-size: 18px; border-radius: 40px; cursor: pointer; font-weight: 900;
+    font-family: var(--font-magic); transition: 0.1s;
+  }
+  .parchment .modal-btn:hover { background: linear-gradient(180deg, #7a4e28, #5d3a1a); transform: translateY(-1px); }
+  .parchment .modal-btn.purple { background: linear-gradient(180deg, #8a4fd0, #5a2a9a); color: #fdf6e3; border-color: #b28eff; }
+  .parchment .modal-btn.purple:hover { background: linear-gradient(180deg, #a162e6, #7b3bc2); }
 
-    /* 羊皮紙遮罩 */
-    .full-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 1000; animation: fadeIn 0.3s ease; }
-    .full-overlay.hidden { display: none; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    .overlay-card {
-      background: linear-gradient(180deg, #f5e6ca, #e8d5b5); border: 3px solid #c4a67a;
-      border-radius: 6px; padding: 36px 28px; text-align: center; max-width: 460px; width: 90%;
-      box-shadow: 0 0 70px rgba(255,215,150,0.5); color: #3e2723;
-    }
-    .overlay-card h2 { font-family: var(--font-magic); font-size: 26px; margin-bottom: 10px; color: #4a148c; letter-spacing: 2px; }
-    .overlay-card .overlay-subtitle { font-size: 15px; color: #5d4037; margin-bottom: 24px; line-height: 1.6; }
-    .overlay-card input {
-      width: 100%; padding: 14px 18px; font-size: 20px; font-family: monospace; letter-spacing: 3px;
-      background: #fff9ea; border: 3px solid #7b4da0; border-radius: 40px; color: #3e2723;
-      text-align: center; outline: none; transition: border-color 0.2s; margin-bottom: 16px;
-    }
-    .overlay-card input:focus { border-color: var(--purple); box-shadow: 0 0 15px rgba(138,79,207,0.3); }
-    .overlay-card input.error-shake { animation: shake 0.4s ease; border-color: #b71c1c !important; }
-    @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(6px)} }
-    .overlay-card .error-msg { font-size: 14px; color: #b71c1c; font-weight: bold; margin-top: -8px; margin-bottom: 14px; background: rgba(0,0,0,0.08); padding: 6px; border-radius: 20px; display: none; }
-    .overlay-card .error-msg.show { display: block; }
+  /* 同步覆蓋層 */
+  .sync-card { background: linear-gradient(180deg, #f5e6ca, #e8d5b5); border: 3px solid #c4a67a; border-radius: 6px; padding: 32px 24px; text-align: center; box-shadow: 0 0 60px rgba(255,215,150,0.5); color: #3e2723; }
+  .sync-spinner { width: 44px; height: 44px; border: 4px solid rgba(196,166,122,0.3); border-top-color: #8d6e4c; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 30px; font-size: 16px; font-weight: 700; font-family: var(--font-magic); border: none; border-radius: 40px; cursor: pointer; transition: all 0.15s; letter-spacing: 1px; }
-    .btn-primary { background: linear-gradient(180deg, #8a4fd0, #5a2a9a); color: #fdf6e3; border: 3px solid #b28eff; box-shadow: 0 0 30px rgba(150,100,240,0.5); }
-    .btn-primary:hover { background: linear-gradient(180deg, #a162e6, #7b3bc2); transform: translateY(-2px); box-shadow: 0 0 40px rgba(150,100,240,0.7); }
-    .btn-gold { background: linear-gradient(180deg, #5d3a1a, #3e2723); color: #e0c76e; border: 3px solid #8d6e4c; box-shadow: 0 0 25px rgba(200,160,100,0.4); }
-    .btn-gold:hover { background: linear-gradient(180deg, #7a4e28, #5d3a1a); transform: translateY(-2px); box-shadow: 0 0 35px rgba(200,160,100,0.6); }
-    .btn-sm { padding: 9px 18px; font-size: 14px; }
+  /* 完成畫面 */
+  .completion-area { text-align: center; padding: 30px 20px; }
+  .completion-area .trophy { font-size: 64px; margin-bottom: 14px; filter: drop-shadow(0 0 25px rgba(245,215,66,0.6)); }
+  .completion-area h2 { font-family: var(--font-magic); font-size: 30px; color: var(--gold); margin-bottom: 8px; letter-spacing: 2px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin: 20px 0; }
+  .stat-card { background: linear-gradient(180deg, rgba(245,230,202,0.12), rgba(232,213,181,0.06)); border: 2px solid rgba(196,166,122,0.4); border-radius: 12px; padding: 16px 12px; }
+  .stat-card .val { font-size: 28px; font-weight: 700; color: var(--gold); font-family: var(--font-magic); }
+  .stat-card .lbl { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
 
-    .sync-spinner { width: 50px; height: 50px; border: 4px solid rgba(196,166,122,0.3); border-top-color: #8d6e4c; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 18px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .sync-text { font-size: 17px; color: #5d4037; font-weight: 600; }
-    .sync-dots::after { content: ''; animation: dots 1.2s steps(4, end) infinite; }
-    @keyframes dots { 0%{content:''} 25%{content:'.'} 50%{content:'..'} 75%{content:'...'} 100%{content:''} }
-    .sync-retry-count { font-size: 13px; color: #8d6e4c; margin-top: 8px; }
-
-    .completion-screen { text-align: center; padding: 40px 20px; }
-    .completion-screen .trophy { font-size: 64px; margin-bottom: 16px; filter: drop-shadow(0 0 25px rgba(245,215,66,0.6)); }
-    .completion-screen h2 { font-family: var(--font-magic); font-size: 30px; color: var(--gold); margin-bottom: 10px; letter-spacing: 2px; text-shadow: 0 0 15px rgba(245,215,66,0.4); }
-    .completion-screen .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin: 24px 0; }
-    .completion-screen .stat-card { background: linear-gradient(180deg, rgba(245,230,202,0.12), rgba(232,213,181,0.06)); border: 2px solid rgba(196,166,122,0.4); border-radius: var(--radius-md); padding: 18px 14px; }
-    .completion-screen .stat-value { font-size: 30px; font-weight: 700; color: var(--gold); font-family: var(--font-magic); }
-    .completion-screen .stat-label { font-size: 13px; color: var(--text-secondary); margin-top: 6px; }
-
-    @media (max-width: 480px) {
-      .top-bar .game-title-text { font-size: 16px; }
-      .question-card { padding: 20px 16px; }
-      .question-text { font-size: 15px; }
-      .option-btn { padding: 12px 14px; font-size: 14px; }
-      .overlay-card { padding: 24px 18px; }
-      .bookshelf-left, .bookshelf-right { width: 50px; }
-    }
-  </style>
+  @media (max-width: 750px) {
+    .main-container { flex-direction: column-reverse; }
+    .right-panel { width: 100%; }
+    .left-panel { min-width: auto; }
+    .header { flex-direction: column; align-items: stretch; }
+    .info-panel { flex-direction: row; justify-content: space-between; }
+  }
+</style>
 </head>
 <body>
 
-  <!-- 背景裝飾 -->
-  <div class="bg-library"><div class="bookshelf-left"></div><div class="bookshelf-right"></div></div>
-  <div class="starfield" id="starfield"></div>
+<div class="bg-library"><div class="bookshelf-left"></div><div class="bookshelf-right"></div></div>
+<div class="starfield" id="starfield"></div>
 
-  <script>
-    (function(){var s=document.getElementById('starfield');for(var i=0;i<45;i++){var t=document.createElement('div');t.className='star';t.style.cssText='left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;width:'+(1+Math.random()*3)+'px;height:'+(1+Math.random()*3)+'px;animation-delay:'+Math.random()*4+'s;animation-duration:'+(2+Math.random()*4)+'s';s.appendChild(t)}})();
-  </script>
+<div class="game-wrapper" id="app"></div>
 
-  <div id="app"></div>
+<!-- 同步傳輸遮罩 -->
+<div class="modal-overlay" id="sync-overlay">
+  <div class="sync-card">
+    <div class="sync-spinner"></div>
+    <p style="font-size:18px;font-weight:600;">🪄 魔法傳輸中<span id="sync-dots"></span></p>
+    <p style="font-size:13px;color:#8d6e4c;margin-top:6px;" id="sync-retry"></p>
+  </div>
+</div>
 
 <script>
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  遊戲引擎設定檔 (GAME_SETTING)                           ║
-   ║  系統所有關卡、題目、密碼均由此動態讀取                     ║
-   ║  嚴禁在程式其他位置 hardcode 任何關卡數或題目數              ║
-   ╚══════════════════════════════════════════════════════════╝ */
+// ═══════════════════════════════════════════════════════
+// 星空生成
+(function(){var s=document.getElementById('starfield');for(var i=0;i<45;i++){var t=document.createElement('div');t.className='star';t.style.cssText='left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;width:'+(1+Math.random()*3)+'px;height:'+(1+Math.random()*3)+'px;animation-delay:'+Math.random()*4+'s;animation-duration:'+(2+Math.random()*4)+'s';s.appendChild(t)}})();
+
+// ═══════════════════════════════════════════════════════
+// GAME_SETTING — 完全動態配置
 const GAME_SETTING = {
-  "gameTitle": "魔法學園：濃度調配課",
-  "levels": [
+  gameTitle: "魔法學園 · 魔藥煉成所",
+  scoreLabels: { 1500:"魔藥大師", 1101:"首席魔藥師", 801:"傑出煉金師", 601:"魔藥專精生", 401:"見習學生", 201:"魔藥新手", 0:"麻瓜" },
+  levels: [
     {
-      "levelNo": 1,
-      "difficulty": "簡單",
-      "levelType": "分數與基礎混合",
-      "nextLevelPassword": "elixir456",
-      "questions": [
-        {
-          "questionNo": 1,
-          "question": "魔法師把 1 杯紅色的火屬性藥水和 3 杯純水混合。請問火屬性藥水佔整杯混合藥水的幾分之幾？",
-          "target": "理解基礎分數與總量的關係",
-          "options": ["三分之一", "四分之一", "四分之三", "三分之二"],
-          "correctIndex": 1,
-          "hint": "注意：分母應該是「火屬性藥水」加上「純水」的總杯數喔！"
+      levelNo: 1, difficulty: "簡單", levelType: "分數 ↔ 百分率 ↔ 小數",
+      nextLevelPassword: "elixir456",
+      timeLimitSec: 50, bonusTimeSec: 10, bonusScore: 5,
+      baseScore: 20, wrongPenalty: -20, emptyPenalty: -30, timeoutPenalty: -15,
+      hintAutoSec: 15, passScore: 60,
+      questions: [
+        { questionNo:1, target:"0.5", targetDisplay:"0.5", slots:2,
+          materials:[
+            {label:"50%",emoji:"🧪"},{label:"1/2",emoji:"⚗️"},{label:"5%",emoji:"💧"},{label:"0.05",emoji:"🧴"},{label:"1/5",emoji:"🫗"},{label:"0.2",emoji:"🧫"}
+          ],
+          correctAnswers:["50%","1/2"],
+          hint:"0.5 = 1/2 = 50%。請把等值的材料放入魔藥瓶（共需 2 個材料）。"
         },
-        {
-          "questionNo": 2,
-          "question": "調配「隱形藥水」需要把 2/5 瓶的魔力泉水和 3/5 瓶的植物汁液倒進大釜混合。混合後一共有多少瓶藥水？",
-          "target": "同分母分數加法應用",
-          "options": ["1 瓶", "5 瓶", "6/5 瓶", "2/3 瓶"],
-          "correctIndex": 0,
-          "hint": "把同分母的分數分子相加：2/5 + 3/5 = ？"
+        { questionNo:2, target:"1/4", targetDisplay:"1/4", slots:2,
+          materials:[
+            {label:"0.25",emoji:"🧪"},{label:"25%",emoji:"⚗️"},{label:"0.4",emoji:"💧"},{label:"40%",emoji:"🧴"},{label:"2/5",emoji:"🫗"},{label:"0.75",emoji:"🧫"}
+          ],
+          correctAnswers:["0.25","25%"],
+          hint:"1/4 = 0.25 = 25%。分母 4 代表分成 4 等份，取其中 1 份就是 25%。"
         },
-        {
-          "questionNo": 3,
-          "question": "一瓶 200 毫升的「生命恢復藥水」中，有 3/10 是蜂蜜調味。請問這瓶藥水裡含有多少毫升的蜂蜜？",
-          "target": "求一個數的幾分之幾是多少",
-          "options": ["30 毫升", "50 毫升", "60 毫升", "100 毫升"],
-          "correctIndex": 2,
-          "hint": "用總容量乘以蜂蜜所佔的分數：200 × (3/10)。"
+        { questionNo:3, target:"75%", targetDisplay:"75%", slots:2,
+          materials:[
+            {label:"0.75",emoji:"🧪"},{label:"3/4",emoji:"⚗️"},{label:"7.5%",emoji:"💧"},{label:"0.075",emoji:"🧴"},{label:"0.7",emoji:"🫗"},{label:"1/3",emoji:"🧫"}
+          ],
+          correctAnswers:["0.75","3/4"],
+          hint:"75% = 0.75 = 3/4。百分率除以 100 就是小數，約分後就是分數。"
         },
-        {
-          "questionNo": 4,
-          "question": "調配標準藍色藥水時，每 2 杯藍色粉末要配 5 杯水。如果魔法師今天用了 4 杯藍色粉末，他需要多少杯水才能保持一樣的配方比例？",
-          "target": "等值分數與簡易比例概念",
-          "options": ["7 杯", "8 杯", "10 杯", "12 杯"],
-          "correctIndex": 2,
-          "hint": "粉末數量變成原本的 2 倍（4杯），水的數量也要變成原本的 2 倍喔！"
+        { questionNo:4, target:"20%", targetDisplay:"20%", slots:2,
+          materials:[
+            {label:"0.2",emoji:"🧪"},{label:"1/5",emoji:"⚗️"},{label:"2%",emoji:"💧"},{label:"0.02",emoji:"🧴"},{label:"0.5",emoji:"🫗"},{label:"1/2",emoji:"🧫"}
+          ],
+          correctAnswers:["0.2","1/5"],
+          hint:"20% = 0.2 = 1/5。20 除以 100 = 0.2，化簡分數就是 1/5。"
         }
       ]
     },
     {
-      "levelNo": 2,
-      "difficulty": "中等",
-      "levelType": "百分率基礎 (%)",
-      "nextLevelPassword": "alchemist789",
-      "questions": [
-        {
-          "questionNo": 1,
-          "question": "魔法學徒調配了一杯總重 100 克的「甜甜藥水」，裡面含有 25 克的砂糖。請問這杯藥水的糖糖濃度（百分率）是多少？",
-          "target": "理解百分率的基礎定義",
-          "options": ["20%", "25%", "50%", "75%"],
-          "correctIndex": 1,
-          "hint": "百分率（%）是指每 100 克總重量中所含目標物（溶質）的克數。"
+      levelNo: 2, difficulty: "中等", levelType: "進階藥理：分數 ↔ 百分率",
+      nextLevelPassword: "alchemist789",
+      timeLimitSec: 60, bonusTimeSec: 12, bonusScore: 5,
+      baseScore: 20, wrongPenalty: -20, emptyPenalty: -30, timeoutPenalty: -15,
+      hintAutoSec: 18, passScore: 80,
+      questions: [
+        { questionNo:1, target:"0.3", targetDisplay:"0.3", slots:2,
+          materials:[
+            {label:"30%",emoji:"🧪"},{label:"3/10",emoji:"⚗️"},{label:"3%",emoji:"💧"},{label:"0.03",emoji:"🧴"},{label:"1/3",emoji:"🫗"},{label:"0.33",emoji:"🧫"}
+          ],
+          correctAnswers:["30%","3/10"],
+          hint:"0.3 = 30% = 3/10。小數點後一位是十分位，兩位是百分位。0.3 就是 3/10 = 30/100 = 30%。"
         },
-        {
-          "questionNo": 2,
-          "question": "院長拿出一瓶總重 500 克的「高級解毒劑」，標籤上註明濃度為 12%。請問這瓶解毒劑裡面含有多少克的解毒草精華？",
-          "target": "求一個數的百分之幾（百分率計算）",
-          "options": ["12 克", "50 克", "60 克", "120 克"],
-          "correctIndex": 2,
-          "hint": "計算方法為：總重量 × 百分率，即 500 × 12% = 500 × 0.12。"
+        { questionNo:2, target:"60%", targetDisplay:"60%", slots:2,
+          materials:[
+            {label:"0.6",emoji:"🧪"},{label:"3/5",emoji:"⚗️"},{label:"6%",emoji:"💧"},{label:"0.06",emoji:"🧴"},{label:"3/10",emoji:"🫗"},{label:"2/3",emoji:"🧫"}
+          ],
+          correctAnswers:["0.6","3/5"],
+          hint:"60% = 0.6 = 3/5。60 ÷ 100 = 0.6，然後 60/100 約分 = 3/5。"
         },
-        {
-          "questionNo": 3,
-          "question": "將一包 40 克的「魔法鹽」完全溶解在 160 克的水中，調配成魔鹽水。請問這杯魔鹽水的濃度是多少？",
-          "target": "計算溶液總重與濃度",
-          "options": ["20%", "25%", "40%", "16%"],
-          "correctIndex": 0,
-          "hint": "注意：總重量是「魔法鹽 40克 + 水 160克 = 200克」。濃度 = 40 ÷ 200 × 100%。"
+        { questionNo:3, target:"0.15", targetDisplay:"0.15", slots:2,
+          materials:[
+            {label:"15%",emoji:"🧪"},{label:"3/20",emoji:"⚗️"},{label:"1.5%",emoji:"💧"},{label:"0.015",emoji:"🧴"},{label:"1/6",emoji:"🫗"},{label:"0.16",emoji:"🧫"}
+          ],
+          correctAnswers:["15%","3/20"],
+          hint:"0.15 = 15% = 3/20。15/100 約分（分子分母同除以 5）= 3/20。"
         },
-        {
-          "questionNo": 4,
-          "question": "某種「狂暴藥水」的標準濃度是 80%。如果現在調配出來的藥水裡，有 4/5 瓶是魔法精華，其餘是水，請問這瓶藥水達到標準濃度了嗎？",
-          "target": "分數與百分率的互換",
-          "options": ["40%，未達標", "60%，未達標", "80%，剛好達標", "85%，超過標準"],
-          "correctIndex": 2,
-          "hint": "把分數 4/5 擴分，讓分母變成 100。4/5 = 80/100 = 80%。"
+        { questionNo:4, target:"4/5", targetDisplay:"4/5", slots:2,
+          materials:[
+            {label:"0.8",emoji:"🧪"},{label:"80%",emoji:"⚗️"},{label:"0.4",emoji:"💧"},{label:"40%",emoji:"🧴"},{label:"4/10",emoji:"🫗"},{label:"1/2",emoji:"🧫"}
+          ],
+          correctAnswers:["0.8","80%"],
+          hint:"4/5 = 0.8 = 80%。分數轉百分率：把分母擴分成 100 → 4/5 = 80/100 = 80%。"
         }
       ]
     },
     {
-      "levelNo": 3,
-      "difficulty": "困難",
-      "levelType": "百分率與比例應用",
-      "nextLevelPassword": "wizardMASTER",
-      "questions": [
-        {
-          "questionNo": 1,
-          "question": "大釜裡原本有 200 克濃度為 10% 的魔法藥水。如果魔法師再往裡面加入 50 克的純魔法精華（視為100%濃度），新的混合藥水總重量是多少？裡面一共含有多少克精華？",
-          "target": "混合溶液的總重與溶質改變",
-          "options": ["總重 250 克，精華 20 克", "總重 250 克，精華 70 克", "總重 200 克，精華 50 克", "總重 250 克，精華 50 克"],
-          "correctIndex": 1,
-          "hint": "原本有精華：200 × 10% = 20克。加入50克精華後，總精華變 70克，總重量變成 200 + 50 = 250克。"
+      levelNo: 3, difficulty: "困難", levelType: "大師祕藥：進階換算",
+      nextLevelPassword: "wizardMASTER",
+      timeLimitSec: 90, bonusTimeSec: 25, bonusScore: 5,
+      baseScore: 20, wrongPenalty: -20, emptyPenalty: -30, timeoutPenalty: -15,
+      hintAutoSec: 22, passScore: 100,
+      questions: [
+        { questionNo:1, target:"0.125", targetDisplay:"0.125", slots:2,
+          materials:[
+            {label:"12.5%",emoji:"🧪"},{label:"1/8",emoji:"⚗️"},{label:"1.25%",emoji:"💧"},{label:"1.25",emoji:"🧴"},{label:"1/4",emoji:"🫗"},{label:"125%",emoji:"🧫"}
+          ],
+          correctAnswers:["12.5%","1/8"],
+          hint:"0.125 = 12.5% = 1/8。125/1000 = 12.5/100 = 12.5%，約分後 = 1/8。"
         },
-        {
-          "questionNo": 2,
-          "question": "承上題，這杯混合後總重 250 克、含有 70 克精華的「新魔法藥水」，它的最終濃度變成了多少？",
-          "target": "計算混合後的最終新濃度",
-          "options": ["25%", "28%", "30%", "35%"],
-          "correctIndex": 1,
-          "hint": "新濃度 = 新精華總重 (70克) ÷ 新總重量 (250克) × 100%。"
+        { questionNo:2, target:"2.5", targetDisplay:"2.5", slots:2,
+          materials:[
+            {label:"250%",emoji:"🧪"},{label:"5/2",emoji:"⚗️"},{label:"25%",emoji:"💧"},{label:"0.25",emoji:"🧴"},{label:"2/5",emoji:"🫗"},{label:"2.05",emoji:"🧫"}
+          ],
+          correctAnswers:["250%","5/2"],
+          hint:"2.5 = 250% = 5/2。大於 1 的數轉百分率會超過 100%。2.5 × 100 = 250% = 5/2。"
         },
-        {
-          "questionNo": 3,
-          "question": "魔法老師把兩杯藥水倒在一起混合：甲杯有 100 克、濃度 5%；乙杯有 300 克、濃度 15%。請問混合後的藥水濃度是多少？",
-          "target": "兩溶液混合的濃度計算（平均濃度概念）",
-          "options": ["10%", "12.5%", "13.5%", "20%"],
-          "correctIndex": 1,
-          "hint": "先分別求出兩杯的精華克數（5克和45克），相加得到總精華（50克），再除以兩杯的總重量（100+300=400克）。"
+        { questionNo:3, target:"0.375", targetDisplay:"0.375", slots:2,
+          materials:[
+            {label:"37.5%",emoji:"🧪"},{label:"3/8",emoji:"⚗️"},{label:"3.75%",emoji:"💧"},{label:"3.75",emoji:"🧴"},{label:"3/4",emoji:"🫗"},{label:"75%",emoji:"🧫"}
+          ],
+          correctAnswers:["37.5%","3/8"],
+          hint:"0.375 = 37.5% = 3/8。375/1000 約分（÷125）= 3/8 = 37.5/100 = 37.5%。"
         },
-        {
-          "questionNo": 4,
-          "question": "有一杯 300 克、濃度 20% 的「狂暴藥水」，魔法安全員想要加水稀釋，讓它的濃度下降到 15% 以確保教學安全。請問他需要加入多少克的純水？",
-          "target": "溶液稀釋問題（溶質不變）",
-          "options": ["50 克", "100 克", "150 克", "200 克"],
-          "correctIndex": 1,
-          "hint": "加水時，裡面的精華重量不變（300 × 20% = 60克）。目標濃度是15%，所以稀釋後的目標總重量 = 60 ÷ 15% = 400克。需要加的水 = 400克 - 原本的300克。"
+        { questionNo:4, target:"140%", targetDisplay:"140%", slots:2,
+          materials:[
+            {label:"1.4",emoji:"🧪"},{label:"7/5",emoji:"⚗️"},{label:"14%",emoji:"💧"},{label:"0.14",emoji:"🧴"},{label:"1.04",emoji:"🫗"},{label:"1/4",emoji:"🧫"}
+          ],
+          correctAnswers:["1.4","7/5"],
+          hint:"140% = 1.4 = 7/5。140 ÷ 100 = 1.4，分數 = 140/100 = 7/5。"
         }
       ]
     }
   ]
 };
 
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  部署設定 (請將此網址替換為你的 Google Apps Script URL)    ║
-   ╚══════════════════════════════════════════════════════════╝ */
+// ═══════════════════════════════════════════════════════
+// 部署設定
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby-2kix-lyXoXfplx9WyvDDDl3EPRwyicwFML7uITjT8WH0Yanbqa1qBgAKt3D_0PnbXQ/exec";
 
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  localStorage Key 常數                                  ║
-   ╚══════════════════════════════════════════════════════════╝ */
-const LS_STUDENT_ID   = 'cl_studentId';
-const LS_PENDING_Q    = 'cl_pendingQueue';
-const LS_GAME_STATE   = 'cl_gameState';
-
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  遊戲全域狀態 (STATE)                                    ║
-   ╚══════════════════════════════════════════════════════════╝ */
+// ═══════════════════════════════════════════════════════
+// STATE
 const STATE = {
-  studentId:           '',     // e.g. "1C32" (班級+座號)
-  currentLevelIdx:     0,      // GAME_SETTING.levels 的索引
-  currentQuestionIdx:  0,      // 當前關卡內 questions 的索引
-  questionStartTime:   0,      // Date.now() 毫秒
-  timerHandle:         null,   // setInterval id
-  hintUsedThisQ:       false,  // 當前題目是否用過提示
-  isAnswerLocked:      false,  // 防止重複點擊
-  totalCorrect:        0,
-  totalQuestionsAns:   0,
-  // 所有答題的總秒數累計 (用於最終結算)
-  totalSecondsSpent:   0
+  studentId: '',
+  currentLevelIdx: 0,
+  currentQuestionIdx: 0,
+  score: 0,
+  levelStartScore: 0,
+  selectedMaterials: [],     // [{label, emoji}] selected from tray
+  timeLeft: 0,
+  timerInterval: null,
+  hintShown: false,
+  hintTimer: null,
+  isLocked: false,
+  totalCorrect: 0,
+  totalAnswered: 0,
+  totalTimeSpent: 0,
+  questionStartTime: 0,
+  attemptType: 'first'       // 'first' | 'retry'
 };
 
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  工具函式                                                ║
-   ╚══════════════════════════════════════════════════════════╝ */
-function pad(n) { return String(n).padStart(2, '0'); }
+const LS_STUDENT = 'mc_studentId';
+const LS_STATE   = 'mc_gameState';
+const LS_PENDING = 'mc_pendingQueue';
 
-function getTimestamp() {
-  const d = new Date();
-  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.${String(d.getMilliseconds()).padStart(3,'0')}`;
+// ═══════════════════════════════════════════════════════
+// UTILS
+function pad(n){return String(n).padStart(2,'0');}
+function ts(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())+'.'+String(d.getMilliseconds()).padStart(3,'0');}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function getRank(s){
+  var labels=GAME_SETTING.scoreLabels, best='麻瓜';
+  Object.keys(labels).sort((a,b)=>b-a).forEach(function(k){if(s>=parseInt(k)&&best==='麻瓜')best=labels[k];});
+  return best;
 }
-
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-/** 取得總題數 (所有關卡題目相加) */
-function getTotalQuestions() {
-  return GAME_SETTING.levels.reduce((sum, lv) => sum + lv.questions.length, 0);
+function getLevel(){return GAME_SETTING.levels[STATE.currentLevelIdx];}
+function getQuestion(){return getLevel().questions[STATE.currentQuestionIdx];}
+function isLastQ(){return STATE.currentQuestionIdx>=getLevel().questions.length-1;}
+function isLastLv(){return STATE.currentLevelIdx>=GAME_SETTING.levels.length-1;}
+function getTotalQ(){return GAME_SETTING.levels.reduce(function(s,lv){return s+lv.questions.length;},0);}
+function getAnsweredCount(){
+  var c=0;
+  for(var i=0;i<STATE.currentLevelIdx;i++)c+=GAME_SETTING.levels[i].questions.length;
+  return c+STATE.currentQuestionIdx;
 }
+function difClass(d){if(d==='簡單')return'green';if(d==='中等')return'gold';return'red';}
 
-/** 取得當前關卡物件 */
-function getCurrentLevel() {
-  return GAME_SETTING.levels[STATE.currentLevelIdx];
-}
+// localStorage pending queue
+function getPending(){try{return JSON.parse(localStorage.getItem(LS_PENDING)||'[]');}catch(e){return[];}}
+function savePending(q){localStorage.setItem(LS_PENDING,JSON.stringify(q));}
+function addPending(p){var q=getPending();q.push(p);savePending(q);}
+function removePending(p){var q=getPending();q=q.filter(function(x){return!(x.timestamp===p.timestamp&&x.levelNo===p.levelNo&&x.questionNo===p.questionNo);});savePending(q);}
 
-/** 取得當前題目物件 */
-function getCurrentQuestion() {
-  return getCurrentLevel().questions[STATE.currentQuestionIdx];
-}
-
-/** 計算「已作答」的題數 (到目前關卡的前一關為止 + 當前關卡已答) */        
-function getAnsweredCount() {
-  let count = 0;
-  for (let i = 0; i < STATE.currentLevelIdx; i++) {
-    count += GAME_SETTING.levels[i].questions.length;
+// ═══════════════════════════════════════════════════════
+// RENDER: 主畫面
+function renderGame(){
+  var app=document.getElementById('app');
+  var lv=getLevel(), q=getQuestion();
+  var totalQ=getTotalQ(), answered=getAnsweredCount();
+  var pct=Math.round((answered/totalQ)*100);
+  var slotsHTML='';
+  var slotPositions=[
+    {left:'12%',top:'22%'},{left:'62%',top:'22%'},{left:'37%',top:'58%'}
+  ];
+  for(var i=0;i<q.slots;i++){
+    var pos=slotPositions[i]||{left:'37%',top:'40%'};
+    var mat=STATE.selectedMaterials[i];
+    var filled=mat?'filled':'';
+    var content=mat?('<span class="slot-emoji">'+mat.emoji+'</span><span class="slot-label">'+mat.label+'</span>'):('?');
+    slotsHTML+='<div class="potion-slot '+filled+'" onclick="removeMaterial('+i+')" style="left:'+pos.left+';top:'+pos.top+';">'+content+'</div>';
   }
-  count += STATE.currentQuestionIdx; // 當前關卡內已完成的題數 (不含正在作答的這題)
-  return count;
+  var trayHTML='';
+  q.materials.forEach(function(m,idx){
+    var sel=STATE.selectedMaterials.some(function(s){return s.label===m.label;});
+    trayHTML+='<div class="material-item'+(sel?' selected':'')+'" onclick="selectMaterial(\''+m.label+'\',\''+m.emoji+'\')"><span class="mat-emoji">'+m.emoji+'</span><span class="mat-label">'+m.label+'</span></div>';
+  });
+  app.innerHTML=
+    '<div class="header">'+
+      '<div class="customer-area">'+
+        '<div class="avatar">🧙‍♂️</div>'+
+        '<div class="bubble-container">'+
+          '<div class="bubble">請調配濃度 <span class="target-val">'+q.targetDisplay+'</span> 的魔藥</div>'+
+          '<div class="time-bar-outer"><div class="time-bar-inner" id="time-bar" style="width:100%"></div><div class="time-bar-text" id="time-text">'+lv.timeLimitSec+' 秒</div></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="info-panel">'+
+        '<div class="level-board">第 '+(STATE.currentQuestionIdx+1)+' / '+lv.questions.length+' 題</div>'+
+        '<div class="score-board"><span>魔力值</span><span id="score-display">'+STATE.score+'</span><span class="rank-badge" id="rank-display">'+getRank(STATE.score)+'</span></div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="main-container">'+
+      '<div class="left-panel">'+
+        '<div class="hint-area" id="hint-area"><div class="hint-title">📘 魔藥筆記</div><div class="hint-content">'+q.hint+'</div></div>'+
+        '<div class="flask-container">'+
+          '<div class="flask-rim"></div><div class="flask-neck"></div>'+
+          '<div class="flask-body"><div class="flask-liquid"></div></div>'+
+          '<div class="potion-board">'+slotsHTML+'</div>'+
+        '</div>'+
+        '<button class="reset-btn" onclick="resetPotion()">🧹 倒掉重練</button>'+
+      '</div>'+
+      '<div class="right-panel">'+
+        '<div class="tray-title">🧪 魔法材料架</div>'+
+        '<div class="tray">'+trayHTML+'</div>'+
+        '<button class="confirm-btn" id="confirm-btn" onclick="submitPotion()">⚗️ 完成魔藥調配</button>'+
+      '</div>'+
+    '</div>';
+
+  STATE.questionStartTime=Date.now();
+  STATE.hintShown=false;
+  STATE.hintTimer=null;
+  startTimer();
+  if(lv.hintAutoSec>0) STATE.hintTimer=setTimeout(showHint,lv.hintAutoSec*1000);
 }
 
-/** 是當前關卡的最後一題？ */
-function isLastQuestionInLevel() {
-  return STATE.currentQuestionIdx >= getCurrentLevel().questions.length - 1;
+// ═══════════════════════════════════════════════════════
+// 材料選擇 / 移除
+function selectMaterial(label,emoji){
+  if(STATE.isLocked)return;
+  var q=getQuestion();
+  if(STATE.selectedMaterials.length>=q.slots)return;
+  if(STATE.selectedMaterials.some(function(s){return s.label===label;}))return;
+  STATE.selectedMaterials.push({label:label,emoji:emoji});
+  renderGame();
+}
+function removeMaterial(idx){
+  if(STATE.isLocked)return;
+  STATE.selectedMaterials.splice(idx,1);
+  renderGame();
+}
+function resetPotion(){
+  if(STATE.isLocked)return;
+  STATE.selectedMaterials=[];
+  renderGame();
 }
 
-/** 是最後一關？ */
-function isLastLevel() {
-  return STATE.currentLevelIdx >= GAME_SETTING.levels.length - 1;
+// ═══════════════════════════════════════════════════════
+// 提示自動顯示
+function showHint(){
+  var hintArea=document.getElementById('hint-area');
+  if(hintArea){hintArea.classList.add('visible');STATE.hintShown=true;}
 }
 
-/** localStorage：pending queue */
-function getPendingQueue() {
-  try {
-    const raw = localStorage.getItem(LS_PENDING_Q);
-    return raw ? JSON.parse(raw) : [];
-  } catch (e) { return []; }
+// ═══════════════════════════════════════════════════════
+// 計時器
+function startTimer(){
+  STATE.timeLeft=getLevel().timeLimitSec;
+  updateTimeBar();
+  STATE.timerInterval=setInterval(tick,100);
 }
-function savePendingQueue(queue) {
-  localStorage.setItem(LS_PENDING_Q, JSON.stringify(queue));
-}
-function addToPending(payload) {
-  const q = getPendingQueue();
-  q.push(payload);
-  savePendingQueue(q);
-}
-function removeFromPending(payload) {
-  let q = getPendingQueue();
-  // 用 timestamp + questionNo + levelNo 作為唯一識別
-  q = q.filter(item =>
-    !(item.timestamp === payload.timestamp &&
-      item.levelNo === payload.levelNo &&
-      item.questionNo === payload.questionNo)
-  );
-  savePendingQueue(q);
-}
-
-/** 難度 -> CSS class */
-function difficultyClass(d) {
-  if (d === '簡單') return 'easy';
-  if (d === '中等') return 'medium';
-  return 'hard';
-}
-
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  DOM 輔助：取得 / 清空 app 容器                           ║
-   ╚══════════════════════════════════════════════════════════╝ */
-const $app = document.getElementById('app');
-function clearApp() { $app.innerHTML = ''; }
-
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  計時器管理 (每題獨立計時)                                 ║
-   ╚══════════════════════════════════════════════════════════╝ */
-function startQuestionTimer() {
-  STATE.questionStartTime = Date.now();
-  STATE.hintUsedThisQ = false;
-}
-
-function stopQuestionTimer() {
-  if (STATE.timerHandle) {
-    clearInterval(STATE.timerHandle);
-    STATE.timerHandle = null;
+function tick(){
+  STATE.timeLeft-=0.1;
+  if(STATE.timeLeft<=0){
+    STATE.timeLeft=0;updateTimeBar();stopTimer();
+    if(!STATE.isLocked)handleTimeout();
   }
-  const elapsedMs = Date.now() - STATE.questionStartTime;
-  return parseFloat((elapsedMs / 1000).toFixed(3)); // 回傳秒數，精確到毫秒
+  else updateTimeBar();
+}
+function updateTimeBar(){
+  var lv=getLevel();
+  var pct=(STATE.timeLeft/lv.timeLimitSec)*100;
+  var bar=document.getElementById('time-bar');
+  var txt=document.getElementById('time-text');
+  if(bar)bar.style.width=pct+'%';
+  if(txt)txt.textContent=Math.ceil(STATE.timeLeft)+' 秒';
+}
+function stopTimer(){
+  if(STATE.timerInterval){clearInterval(STATE.timerInterval);STATE.timerInterval=null;}
+  if(STATE.hintTimer){clearTimeout(STATE.hintTimer);STATE.hintTimer=null;}
+  var elapsed=(Date.now()-STATE.questionStartTime)/1000;
+  return parseFloat(elapsed.toFixed(3));
 }
 
-/** 取得目前已經過的秒數 (用於即時顯示，不停止計時器) */
-function getElapsedSeconds() {
-  return parseFloat(((Date.now() - STATE.questionStartTime) / 1000).toFixed(3));
+// ═══════════════════════════════════════════════════════
+// 提交調配
+async function submitPotion(){
+  if(STATE.isLocked)return;
+  STATE.isLocked=true;
+  stopTimer();
+  var lv=getLevel(), q=getQuestion();
+  var timeSpent=parseFloat(((Date.now()-STATE.questionStartTime)/1000).toFixed(3));
+  STATE.totalTimeSpent+=timeSpent;
+  STATE.totalAnswered++;
+
+  var chosenLabels=STATE.selectedMaterials.map(function(s){return s.label;});
+  var correctSet=q.correctAnswers.slice().sort().join(',');
+  var chosenSet=chosenLabels.slice().sort().join(',');
+  var isCorrect=(correctSet===chosenSet);
+  var isEmpty=(chosenLabels.length===0);
+  var scoreChange=0;
+
+  if(isEmpty){scoreChange=lv.emptyPenalty;}
+  else if(isCorrect){scoreChange=lv.baseScore;if(timeSpent<=lv.bonusTimeSec)scoreChange+=lv.bonusScore;}
+  else{scoreChange=lv.wrongPenalty;}
+
+  STATE.score+=scoreChange;
+  if(isCorrect)STATE.totalCorrect++;
+
+  // 顯示 modal 回饋
+  showResultModal(isCorrect,isEmpty,scoreChange,timeSpent,q);
+
+  // 組 payload
+  var payload={
+    timestamp:ts(), studentId:STATE.studentId, gameTitle:GAME_SETTING.gameTitle,
+    levelNo:lv.levelNo, questionNo:q.questionNo, difficulty:lv.difficulty, levelType:lv.levelType,
+    target:q.target, chosenMaterials:chosenLabels.join(', '), correctAnswers:q.correctAnswers.join(', '),
+    isCorrect:isCorrect, scoreChange:scoreChange, totalScore:STATE.score,
+    timeTaken:timeSpent, timeLimit:lv.timeLimitSec,
+    bonusEarned:(isCorrect&&timeSpent<=lv.bonusTimeSec),
+    hintUsed:STATE.hintShown, attemptType:STATE.attemptType,
+    materialsPlaced:chosenLabels.length, isTimeout:false,
+    rank:getRank(STATE.score)
+  };
+
+  // 等待 modal 關閉後同步
+  await waitForModalClose();
+  await syncPayload(payload);
+  STATE.isLocked=false;
+  advanceAfterSubmit();
 }
 
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  反丟失同步機制 (Anti-Loss Sync)                          ║
-   ║  Payload 由 answer handler 內聯組裝 (12 欄位)             ║
-   ╚══════════════════════════════════════════════════════════╝ */
+function handleTimeout(){
+  if(STATE.isLocked)return;
+  STATE.isLocked=true;
+  stopTimer();
+  var lv=getLevel(), q=getQuestion();
+  var timeSpent=lv.timeLimitSec;
+  STATE.totalTimeSpent+=timeSpent;
+  STATE.totalAnswered++;
+  STATE.score+=lv.timeoutPenalty;
 
-/**
- * 單次 fetch 嘗試
- * @returns {object|null} response JSON 或 null (失敗)
- */
-async function trySendPayload(payload) {
-  // 若 WEB_APP_URL 仍為佔位文字，跳過真實傳輸（本地測試模式）
-  if (!WEB_APP_URL || WEB_APP_URL.includes('在此貼上您的') || WEB_APP_URL.includes('YOUR_')) {
-    console.log('[測試模式] 略過真實傳輸:', payload);
-    return { status: 'success' };
-  }
-  try {
-    const resp = await fetch(WEB_APP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload)
-    });
-    if (!resp.ok) return null;
-    const data = await resp.json();
-    return data;
-  } catch (err) {
-    console.warn('[Sync] fetch 失敗:', err.message);
-    return null;
+  var payload={
+    timestamp:ts(), studentId:STATE.studentId, gameTitle:GAME_SETTING.gameTitle,
+    levelNo:lv.levelNo, questionNo:q.questionNo, difficulty:lv.difficulty, levelType:lv.levelType,
+    target:q.target, chosenMaterials:'(超時)', correctAnswers:q.correctAnswers.join(', '),
+    isCorrect:false, scoreChange:lv.timeoutPenalty, totalScore:STATE.score,
+    timeTaken:timeSpent, timeLimit:lv.timeLimitSec,
+    bonusEarned:false,
+    hintUsed:STATE.hintShown, attemptType:STATE.attemptType,
+    materialsPlaced:0, isTimeout:true,
+    rank:getRank(STATE.score)
+  };
+
+  showResultModal(false,false,lv.timeoutPenalty,timeSpent,q,true);
+  // async continue after modal
+  (async function(){
+    await waitForModalClose();
+    await syncPayload(payload);
+    STATE.isLocked=false;
+    advanceAfterSubmit();
+  })();
+}
+
+function waitForModalClose(){
+  return new Promise(function(resolve){
+    var check=setInterval(function(){
+      var m=document.getElementById('result-modal');
+      if(!m||!m.classList.contains('show')){clearInterval(check);resolve();}
+    },200);
+  });
+}
+
+function showResultModal(isCorrect,isEmpty,scoreChange,timeSpent,q,isTimeout){
+  var icon=isTimeout?'⏰':(isEmpty?'🤔':(isCorrect?'✨':'❌'));
+  var title=isTimeout?'時間耗盡！':(isEmpty?'你沒有放任何材料':(isCorrect?'調配成功！':'配方錯誤'));
+  var color=isCorrect&&!isTimeout?'#2e7d32':'#b71c1c';
+  var bonusNote='';
+  if(isCorrect&&!isTimeout&&timeSpent<=getLevel().bonusTimeSec)bonusNote='<p style="color:#6a1b9a;font-size:16px;margin-top:8px;">⚡ 速度獎勵 +'+getLevel().bonusScore+' 分！</p>';
+  var correctHtml='';
+  if(!isCorrect||isTimeout)correctHtml='<div style="background:rgba(201,168,76,0.2);border:2px dashed #c9a84c;padding:12px;font-size:16px;margin:12px 0;border-radius:8px;">✅ 正確配方：<strong>'+q.correctAnswers.join(' + ')+'</strong></div>';
+
+  var html=
+    '<div class="modal-overlay show" id="result-modal">'+
+      '<div class="parchment">'+
+        '<div style="font-size:48px;">'+icon+'</div>'+
+        '<h2 style="color:'+color+';">'+title+'</h2>'+
+        '<p style="font-size:17px;">分數變化：<strong style="color:'+(scoreChange>=0?'#2e7d32':'#b71c1c')+';">'+(scoreChange>=0?'+':'')+scoreChange+' 分</strong></p>'+
+        '<p style="font-size:15px;color:#5d4037;">耗時：'+timeSpent.toFixed(1)+' 秒 | 魔力值：'+STATE.score+'</p>'+
+        bonusNote+correctHtml+
+        '<button class="modal-btn purple" onclick="closeResultModal()" style="font-size:20px;padding:12px 32px;">繼續</button>'+
+      '</div>'+
+    '</div>';
+  document.body.insertAdjacentHTML('beforeend',html);
+}
+
+function closeResultModal(){
+  var m=document.getElementById('result-modal');
+  if(m)m.remove();
+}
+
+function advanceAfterSubmit(){
+  if(isLastQ()){
+    if(isLastLv()){showCompletion();}
+    else{showPasswordGate();}
+  }else{
+    STATE.currentQuestionIdx++;
+    STATE.selectedMaterials=[];
+    STATE.attemptType='first';
+    renderGame();
   }
 }
 
-/**
- * 帶重試的傳輸 (最多 5 次，間隔 2 秒)
- * @returns {boolean} 是否成功
- */
-async function sendWithRetry(payload, maxRetries = 5, intervalMs = 2000) {
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    const result = await trySendPayload(payload);
-    if (result && result.status === 'success') {
-      return true;
-    }
-    if (attempt < maxRetries) {
-      await sleep(intervalMs);
-    }
-  }
+// ═══════════════════════════════════════════════════════
+// 同步傳輸
+async function trySend(payload){
+  if(!WEB_APP_URL||WEB_APP_URL.includes('YOUR_')){console.log('[測試]略過傳輸');return{status:'success'};}
+  try{var r=await fetch(WEB_APP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});if(!r.ok)return null;return await r.json();}catch(e){return null;}
+}
+async function sendWithRetry(payload,max,interval){
+  for(var i=1;i<=max;i++){var r=await trySend(payload);if(r&&r.status==='success')return true;if(i<max)await sleep(interval);}
   return false;
 }
-
-/**
- * 主要同步流程：
- *  1. localStorage 備份
- *  2. 全螢幕遮罩
- *  3. 重試傳輸
- *  4. 成功 → 清除備份、關遮罩；失敗 → 保留備份、關遮罩、提示
- * @returns {boolean} 傳輸是否成功
- */
-async function syncPayload(payload) {
-  // 1. 先存入本地 pending 備份
-  addToPending(payload);
-
-  // 2. 顯示傳輸遮罩
+async function syncPayload(payload){
+  addPending(payload);
   showSyncOverlay();
+  var ok=await sendWithRetry(payload,5,2000);
+  if(ok){removePending(payload);}else{alert('⚠️ 網路擁擠，魔法傳輸受阻。\n數據已安全暫存，後續自動補傳。');}
+  hideSyncOverlay();
+}
+function showSyncOverlay(){document.getElementById('sync-overlay').classList.add('show');}
+function hideSyncOverlay(){document.getElementById('sync-overlay').classList.remove('show');}
 
-  // 3. 發送 (最多重試 5 次)
-  const success = await sendWithRetry(payload, 5, 2000);
-
-  // 4. 處理結果
-  if (success) {
-    removeFromPending(payload);
-    hideSyncOverlay();
-    return true;
-  } else {
-    // 失敗：保留 pending，關遮罩，提示用戶
-    hideSyncOverlay();
-    alert('⚠️ 網路擁擠，魔法傳輸暫時受阻。\n\n您的答題數據已安全暫存於本地，系統將在後續自動補傳，請放心繼續挑戰！');
-    return false;
-  }
+async function flushPending(){
+  var q=getPending();if(!q.length)return;
+  var toRemove=[];
+  for(var i=0;i<q.length;i++){var ok=await sendWithRetry(q[i],3,2000);if(ok)toRemove.push(q[i]);}
+  if(toRemove.length){var remaining=q.filter(function(x){return!toRemove.some(function(r){return r.timestamp===x.timestamp&&r.levelNo===x.levelNo&&r.questionNo===x.questionNo;});});savePending(remaining);}
 }
 
-/** 顯示傳輸中遮罩 */
-function showSyncOverlay() {
-  let overlay = document.getElementById('sync-overlay');
-  if (!overlay) {
-    overlay = document.createElement('div');
-    overlay.id = 'sync-overlay';
-    overlay.className = 'full-overlay';
-    overlay.innerHTML = `
-      <div class="overlay-card">
-        <div class="sync-spinner"></div>
-        <p class="sync-text">🪄 魔法傳輸中<span class="sync-dots"></span></p>
-        <p class="sync-retry-count" id="sync-retry-msg"></p>
-      </div>`;
-    document.body.appendChild(overlay);
-  }
-  overlay.classList.remove('hidden');
-}
-function hideSyncOverlay() {
-  const overlay = document.getElementById('sync-overlay');
-  if (overlay) overlay.classList.add('hidden');
-}
+// ═══════════════════════════════════════════════════════
+// 密碼驗證 + 重試
+function showPasswordGate(){
+  var lv=getLevel();
+  var html=
+    '<div class="modal-overlay show" id="pw-modal">'+
+      '<div class="parchment">'+
+        '<div style="font-size:48px;">🔐</div>'+
+        '<h2>關卡 '+lv.levelNo+' 通關驗證</h2>'+
+        '<p class="subtitle">恭喜完成「'+lv.difficulty+' - '+lv.levelType+'」！<br>魔力值：<strong>'+STATE.score+'</strong>（通關門檻：'+lv.passScore+'分）</p>'+
+        '<p style="font-size:14px;color:#5d4037;">請輸入導師提供的解鎖密碼</p>'+
+        '<input type="text" id="pw-input" placeholder="輸入密碼" autocomplete="off" maxlength="30">'+
+        '<div class="err" id="pw-err"></div>'+
+        '<div class="btn-group">'+
+          '<button class="modal-btn" id="retry-btn">🔁 重新挑戰此關</button>'+
+          '<button class="modal-btn purple" id="pw-submit">🔓 輸入密碼晉級</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  document.body.insertAdjacentHTML('beforeend',html);
 
-/**
- * 背景補傳 pending queue（在關卡初始化時靜默執行）
- */
-async function flushPendingQueue() {
-  const queue = getPendingQueue();
-  if (queue.length === 0) return;
-
-  console.log(`[Sync] 背景補傳 ${queue.length} 筆 pending 資料...`);
-  const toRemove = [];
-  for (const item of queue) {
-    const ok = await sendWithRetry(item, 3, 2000);
-    if (ok) toRemove.push(item);
-  }
-  if (toRemove.length > 0) {
-    const remaining = queue.filter(item =>
-      !toRemove.some(r =>
-        r.timestamp === item.timestamp &&
-        r.levelNo === item.levelNo &&
-        r.questionNo === item.questionNo
-      )
-    );
-    savePendingQueue(remaining);
-    console.log(`[Sync] 補傳成功 ${toRemove.length} 筆，剩餘 ${remaining.length} 筆`);
-  }
-}
-
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  登入畫面 (學籍登錄)                                      ║
-   ╚══════════════════════════════════════════════════════════╝ */
-function showLoginScreen() {
-  clearApp();
-  $app.innerHTML = `
-    <div class="full-overlay" id="login-overlay">
-      <div class="overlay-card">
-        <div style="font-size:48px;margin-bottom:8px;">🧙‍♂️</div>
-        <h2>魔法學園入學登記</h2>
-        <p class="overlay-subtitle">請輸入你的班級與座號，例如：<strong>1C32</strong></p>
-        <input type="text" id="login-input"
-               placeholder="班級座號 (例: 1C32)"
-               autocomplete="off" maxlength="10">
-        <p class="error-msg" id="login-error">請輸入班級座號（格式如：1C32，數字+班級字母+座號）</p>
-        <button class="btn btn-gold" id="login-btn">🏰 進入魔法學園</button>
-      </div>
-    </div>`;
-
-  const input   = document.getElementById('login-input');
-  const btn     = document.getElementById('login-btn');
-  const errEl   = document.getElementById('login-error');
-
-  function doLogin() {
-    const val = input.value.trim().toUpperCase();
-    // 驗證格式：數字 + 一個英文字母（班級） + 數字（座號），如 1C32
-    if (!/^\d+[A-Z]\d+$/.test(val)) {
-      input.classList.add('error-shake');
-      errEl.classList.add('show');
-      setTimeout(() => {
-        input.classList.remove('error-shake');
-        errEl.classList.remove('show');
-      }, 800);
-      return;
-    }
-    STATE.studentId = val;
-    localStorage.setItem(LS_STUDENT_ID, val);
-    // 隱藏登入畫面
-    const overlay = document.getElementById('login-overlay');
-    if (overlay) overlay.remove();
-    // 開始遊戲
-    initGame();
-  }
-
-  btn.addEventListener('click', doLogin);
-  input.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-  input.focus();
-}
-
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  渲染頂部 Bar + 進度條 (動態)                              ║
-   ╚══════════════════════════════════════════════════════════╝ */
-function renderTopBar() {
-  return `
-    <div class="top-bar">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span class="game-icon">🧪</span>
-        <span class="game-title-text">${GAME_SETTING.gameTitle}</span>
-      </div>
-      <div class="student-badge">
-        🧑‍🎓 ${STATE.studentId}
-      </div>
-    </div>`;
-}
-
-function renderProgress() {
-  const lv = getCurrentLevel();
-  const totalQ = getTotalQuestions();
-  const answered = getAnsweredCount(); // 已完成題數 (不含正在作答的這題)
-  const currentQInLevel = STATE.currentQuestionIdx + 1; // 1-based
-  const totalQInLevel = lv.questions.length;
-  const overallPct = Math.round((answered / totalQ) * 100);
-
-  return `
-    <div class="progress-section">
-      <div class="level-header">
-        <div class="level-tag">
-          <span class="level-number">⚡ 第 ${lv.levelNo} 關</span>
-          <span class="difficulty-badge ${difficultyClass(lv.difficulty)}">${lv.difficulty}</span>
-          <span class="level-type-tag">${lv.levelType}</span>
-        </div>
-        <span class="question-progress-text">
-          第 ${currentQInLevel} / ${totalQInLevel} 題
-        </span>
-      </div>
-      <div class="progress-bar-outer">
-        <div class="progress-bar-inner" style="width:${overallPct}%;" id="global-progress-bar"></div>
-      </div>
-      <div class="total-progress-label">
-        總進度：${answered} / ${totalQ} 題已完成
-      </div>
-    </div>`;
-}
-
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  渲染題目卡片 (動態)                                      ║
-   ╚══════════════════════════════════════════════════════════╝ */
-function renderQuestionCard() {
-  const q = getCurrentQuestion();
-  const optionLetters = ['A', 'B', 'C', 'D'];
-  let optionsHTML = '';
-  q.options.forEach((opt, idx) => {
-    optionsHTML += `
-      <button class="option-btn" data-option-index="${idx}" id="opt-btn-${idx}">
-        <span class="option-letter">${optionLetters[idx]}</span>
-        <span>${opt}</span>
-      </button>`;
+  document.getElementById('retry-btn').addEventListener('click',function(){document.getElementById('pw-modal').remove();restartCurrentLevel();});
+  document.getElementById('pw-submit').addEventListener('click',function(){
+    var val=document.getElementById('pw-input').value.trim();
+    if(val===lv.nextLevelPassword){document.getElementById('pw-modal').remove();advanceToNextLevel();}
+    else{document.getElementById('pw-err').textContent='🔮 密碼不正確，請再試一次！';}
   });
-
-  return `
-    <div class="question-card" id="question-card">
-      <div class="question-meta">
-        <span class="q-no-badge">第 ${q.questionNo} 題</span>
-        <span class="target-badge">🎯 ${q.target}</span>
-      </div>
-      <div class="question-text">${q.question}</div>
-      <div class="options-grid" id="options-grid">
-        ${optionsHTML}
-      </div>
-      <div class="feedback-banner" id="feedback-banner"></div>
-      <div class="hint-section">
-        <button class="hint-toggle" id="hint-toggle">
-          💡 顯示魔法提示
-        </button>
-        <div class="hint-content" id="hint-content">${q.hint}</div>
-      </div>
-    </div>`;
+  document.getElementById('pw-input').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('pw-submit').click();});
+  document.getElementById('pw-input').focus();
 }
 
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  密碼驗證彈窗 (關卡間解鎖)                                 ║
-   ╚══════════════════════════════════════════════════════════╝ */
-function showPasswordGate() {
-  const lv = getCurrentLevel();
-  const overlay = document.createElement('div');
-  overlay.id = 'password-overlay';
-  overlay.className = 'full-overlay';
-  overlay.innerHTML = `
-    <div class="overlay-card">
-      <div style="font-size:48px;margin-bottom:8px;">🔐</div>
-      <h2>關卡 ${lv.levelNo} 通關驗證</h2>
-      <p class="overlay-subtitle">
-        恭喜完成「${lv.difficulty} - ${lv.levelType}」所有題目！<br>
-        請輸入老師提供的 <strong>解鎖密碼</strong> 以進入下一關。
-      </p>
-      <input type="text" id="pw-input"
-             placeholder="請輸入關卡密碼"
-             autocomplete="off" maxlength="30">
-      <p class="error-msg" id="pw-error">🔮 密碼不正確，請再試一次！</p>
-      <button class="btn btn-gold" id="pw-submit">✨ 解鎖下一關</button>
-    </div>`;
-  document.body.appendChild(overlay);
-
-  const input  = document.getElementById('pw-input');
-  const btn    = document.getElementById('pw-submit');
-  const errEl  = document.getElementById('pw-error');
-
-  function checkPassword() {
-    const val = input.value.trim();
-    if (val === lv.nextLevelPassword) {
-      // 密碼正確
-      overlay.remove();
-      advanceToNextLevel();
-    } else {
-      input.classList.add('error-shake');
-      errEl.classList.add('show');
-      setTimeout(() => {
-        input.classList.remove('error-shake');
-        errEl.classList.remove('show');
-      }, 800);
-    }
-  }
-
-  btn.addEventListener('click', checkPassword);
-  input.addEventListener('keydown', e => { if (e.key === 'Enter') checkPassword(); });
-  input.focus();
+function restartCurrentLevel(){
+  STATE.currentQuestionIdx=0;
+  STATE.selectedMaterials=[];
+  STATE.score=STATE.levelStartScore;
+  STATE.attemptType='retry';
+  flushPending();
+  renderGame();
 }
 
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  關卡推進邏輯                                            ║
-   ╚══════════════════════════════════════════════════════════╝ */
-function advanceToNextLevel() {
+function advanceToNextLevel(){
   STATE.currentLevelIdx++;
-  STATE.currentQuestionIdx = 0;
-  // 背景補傳 pending
-  flushPendingQueue();
-  renderGameScreen();
+  STATE.currentQuestionIdx=0;
+  STATE.selectedMaterials=[];
+  STATE.levelStartScore=STATE.score;
+  STATE.attemptType='first';
+  flushPending();
+  renderGame();
 }
 
-function advanceToNextQuestion() {
-  STATE.currentQuestionIdx++;
-  renderGameScreen();
+// ═══════════════════════════════════════════════════════
+// 完成畫面
+function showCompletion(){
+  var app=document.getElementById('app');
+  var totalQ=getTotalQ(), correct=STATE.totalCorrect;
+  var pct=Math.round((correct/totalQ)*100);
+  var ts=STATE.totalTimeSpent, mm=Math.floor(ts/60), ss=Math.floor(ts%60);
+  app.innerHTML=
+    '<div class="completion-area">'+
+      '<div class="trophy">🏆</div>'+
+      '<h2>恭喜畢業！</h2>'+
+      '<p style="color:var(--text-secondary);margin-bottom:16px;">'+STATE.studentId+'，你已完成所有魔藥試煉！</p>'+
+      '<div class="stats-grid">'+
+        '<div class="stat-card"><div class="val">'+totalQ+'</div><div class="lbl">總題數</div></div>'+
+        '<div class="stat-card"><div class="val">'+correct+'</div><div class="lbl">答對題數</div></div>'+
+        '<div class="stat-card"><div class="val">'+pct+'%</div><div class="lbl">正確率</div></div>'+
+        '<div class="stat-card"><div class="val">'+STATE.score+'</div><div class="lbl">魔力值</div></div>'+
+        '<div class="stat-card"><div class="val">'+getRank(STATE.score)+'</div><div class="lbl">稱號</div></div>'+
+        '<div class="stat-card"><div class="val">'+mm+'分'+pad(ss)+'秒</div><div class="lbl">總調配時間</div></div>'+
+      '</div>'+
+      '<button class="reset-btn" onclick="restartGame()" style="font-size:18px;padding:12px 30px;">🔄 重新挑戰</button>'+
+    '</div>';
 }
 
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  最終結算畫面                                            ║
-   ╚══════════════════════════════════════════════════════════╝ */
-function showCompletionScreen() {
-  clearApp();
-  const totalQ  = getTotalQuestions();
-  const correct = STATE.totalCorrect;
-  const pct     = Math.round((correct / totalQ) * 100);
-  const totalSec = STATE.totalSecondsSpent;
-  const mm = Math.floor(totalSec / 60);
-  const ss = Math.floor(totalSec % 60);
-
-  $app.innerHTML = `
-    ${renderTopBar()}
-    <div class="completion-screen">
-      <div class="trophy">🏆</div>
-      <h2>恭喜通關！</h2>
-      <p style="color:var(--text-secondary);margin-bottom:8px;">
-        ${STATE.studentId}，你已完成所有魔法濃度挑戰！
-      </p>
-      <div class="stats">
-        <div class="stat-card">
-          <div class="stat-value">${totalQ}</div>
-          <div class="stat-label">總題數</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">${correct}</div>
-          <div class="stat-label">答對題數</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">${pct}%</div>
-          <div class="stat-label">正確率</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">${mm}分${pad(ss)}秒</div>
-          <div class="stat-label">總答題時間</div>
-        </div>
-      </div>
-      <button class="btn btn-primary" onclick="restartGame()" style="margin-top:16px;">
-        🔄 重新挑戰
-      </button>
-    </div>`;
+function restartGame(){
+  STATE.currentLevelIdx=0;STATE.currentQuestionIdx=0;STATE.selectedMaterials=[];
+  STATE.score=0;STATE.levelStartScore=0;STATE.totalCorrect=0;STATE.totalAnswered=0;
+  STATE.totalTimeSpent=0;STATE.attemptType='first';STATE.isLocked=false;
+  renderGame();
 }
 
-function restartGame() {
-  STATE.currentLevelIdx     = 0;
-  STATE.currentQuestionIdx  = 0;
-  STATE.totalCorrect        = 0;
-  STATE.totalQuestionsAns   = 0;
-  STATE.totalSecondsSpent   = 0;
-  STATE.isAnswerLocked      = false;
-  clearApp();
-  renderGameScreen();
-}
-
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  主畫面渲染 (題目 + 進度)                                  ║
-   ╚══════════════════════════════════════════════════════════╝ */
-function renderGameScreen() {
-  clearApp();
-  $app.innerHTML = renderTopBar() + renderProgress() + renderQuestionCard();
-
-  // 綁定事件
-  bindOptionEvents();
-  bindHintEvents();
-
-  // 開始計時
-  startQuestionTimer();
-}
-
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  選項點擊事件                                            ║
-   ╚══════════════════════════════════════════════════════════╝ */
-function bindOptionEvents() {
-  const q = getCurrentQuestion();
-  const buttons = document.querySelectorAll('.option-btn');
-
-  buttons.forEach((btn, idx) => {
-    btn.addEventListener('click', async () => {
-      if (STATE.isAnswerLocked) return;
-      STATE.isAnswerLocked = true;
-
-      // 停止計時，取得花費秒數
-      const secondsTaken = stopQuestionTimer();
-      STATE.totalSecondsSpent += secondsTaken;
-
-      const isCorrect = (idx === q.correctIndex);
-      if (isCorrect) STATE.totalCorrect++;
-      STATE.totalQuestionsAns++;
-
-      // 視覺回饋：標記正確/錯誤選項
-      buttons.forEach((b, i) => {
-        b.classList.add('disabled');
-        if (i === q.correctIndex) {
-          b.classList.add('correct-choice');
-        }
-      });
-      if (!isCorrect) {
-        btn.classList.add('wrong-choice');
-      }
-
-      // 顯示回饋橫幅
-      const feedbackBanner = document.getElementById('feedback-banner');
-      const questionCard   = document.getElementById('question-card');
-      if (isCorrect) {
-        feedbackBanner.className = 'feedback-banner correct show';
-        feedbackBanner.textContent = '✅ 答對了！魔法藥水調配成功！';
-        questionCard.classList.add('correct-flash');
-      } else {
-        feedbackBanner.className = 'feedback-banner wrong show';
-        feedbackBanner.textContent = `❌ 答錯了！正確答案是「${q.options[q.correctIndex]}」`;
-        questionCard.classList.add('wrong-flash');
-      }
-
-      // 組裝 payload
-      const payload = {
-        timestamp:   getTimestamp(),
-        studentId:   STATE.studentId,
-        gameTitle:   GAME_SETTING.gameTitle,
-        levelNo:     getCurrentLevel().levelNo,
-        questionNo:  q.questionNo,
-        difficulty:  getCurrentLevel().difficulty,
-        levelType:   getCurrentLevel().levelType,
-        target:      q.target,
-        chosen:      q.options[idx],   // 學生實際點選的選項
-        isCorrect:   isCorrect,
-        timeTaken:   secondsTaken,
-        hintUsed:    STATE.hintUsedThisQ
-      };
-
-      // 等待 1.2 秒讓學生看清楚回饋
-      await sleep(1200);
-
-      // 執行反丟失同步傳輸
-      const syncOk = await syncPayload(payload);
-
-      // 決定下一步
-      STATE.isAnswerLocked = false;
-
-      if (isLastQuestionInLevel()) {
-        if (isLastLevel()) {
-          // 最後一關的最後一題 → 結算畫面
-          showCompletionScreen();
-        } else {
-          // 還有下一關 → 密碼驗證
-          showPasswordGate();
-        }
-      } else {
-        // 同一關還有下一題 → 直接前進
-        advanceToNextQuestion();
-      }
-    });
-  });
-}
-
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  提示按鈕事件                                            ║
-   ╚══════════════════════════════════════════════════════════╝ */
-function bindHintEvents() {
-  const toggle = document.getElementById('hint-toggle');
-  const content = document.getElementById('hint-content');
-  if (!toggle || !content) return;
-
-  toggle.addEventListener('click', () => {
-    const isVisible = content.classList.contains('visible');
-    if (isVisible) {
-      content.classList.remove('visible');
-      toggle.innerHTML = '💡 顯示魔法提示';
-    } else {
-      content.classList.add('visible');
-      STATE.hintUsedThisQ = true;
-      toggle.classList.add('used');
-      toggle.innerHTML = '🔮 魔法提示已揭示';
-    }
-  });
-}
-
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  遊戲初始化入口                                          ║
-   ╚══════════════════════════════════════════════════════════╝ */
-function initGame() {
-  // 嘗試恢復遊戲進度
-  const savedState = localStorage.getItem(LS_GAME_STATE);
-  if (savedState) {
-    try {
-      const parsed = JSON.parse(savedState);
-      STATE.currentLevelIdx    = parsed.currentLevelIdx    || 0;
-      STATE.currentQuestionIdx = parsed.currentQuestionIdx || 0;
-      STATE.totalCorrect       = parsed.totalCorrect       || 0;
-      STATE.totalSecondsSpent  = parsed.totalSecondsSpent  || 0;
-    } catch (e) { /* ignore */ }
-  }
-
-  // 背景補傳 pending 資料
-  flushPendingQueue();
-
-  renderGameScreen();
-}
-
-// 定時儲存遊戲進度（每 5 秒）
-setInterval(() => {
-  if (STATE.studentId) {
-    localStorage.setItem(LS_GAME_STATE, JSON.stringify({
-      currentLevelIdx:    STATE.currentLevelIdx,
-      currentQuestionIdx: STATE.currentQuestionIdx,
-      totalCorrect:       STATE.totalCorrect,
-      totalSecondsSpent:  STATE.totalSecondsSpent
-    }));
-  }
-}, 5000);
-
-/* ╔══════════════════════════════════════════════════════════╗
-   ║  啟動：檢查登入狀態                                       ║
-   ╚══════════════════════════════════════════════════════════╝ */
-(function bootstrap() {
-  const savedId = localStorage.getItem(LS_STUDENT_ID);
-  if (savedId) {
-    STATE.studentId = savedId;
+// ═══════════════════════════════════════════════════════
+// 登入
+function showLogin(){
+  document.getElementById('app').innerHTML=
+    '<div class="modal-overlay show">'+
+      '<div class="parchment">'+
+        '<div style="font-size:48px;">🧙‍♂️</div>'+
+        '<h2>魔法學園入學登記</h2>'+
+        '<p class="subtitle">請輸入你的班級與座號，例如：<strong>1C32</strong></p>'+
+        '<input type="text" id="login-input" placeholder="班級座號 (例: 1C32)" autocomplete="off" maxlength="10">'+
+        '<div class="err" id="login-err"></div>'+
+        '<button class="modal-btn purple" id="login-btn" style="font-size:22px;padding:14px 36px;">🏰 進入魔法學園</button>'+
+      '</div>'+
+    '</div>';
+  function doLogin(){
+    var val=document.getElementById('login-input').value.trim().toUpperCase();
+    if(!/^\d+[A-Z]\d+$/.test(val)){document.getElementById('login-err').textContent='請輸入正確格式（如：1C32）';return;}
+    STATE.studentId=val;
+    localStorage.setItem(LS_STUDENT,val);
+    document.querySelector('.modal-overlay').remove();
     initGame();
-  } else {
-    showLoginScreen();
   }
+  document.getElementById('login-btn').addEventListener('click',doLogin);
+  document.getElementById('login-input').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+  document.getElementById('login-input').focus();
+}
+
+// ═══════════════════════════════════════════════════════
+// 初始化
+function initGame(){
+  try{
+    var saved=JSON.parse(localStorage.getItem(LS_STATE)||'{}');
+    STATE.currentLevelIdx=saved.currentLevelIdx||0;
+    STATE.currentQuestionIdx=saved.currentQuestionIdx||0;
+    STATE.score=saved.score||0;
+    STATE.levelStartScore=saved.levelStartScore||0;
+    STATE.totalCorrect=saved.totalCorrect||0;
+    STATE.totalTimeSpent=saved.totalTimeSpent||0;
+  }catch(e){}
+  STATE.selectedMaterials=[];
+  flushPending();
+  renderGame();
+}
+
+setInterval(function(){
+  if(STATE.studentId)localStorage.setItem(LS_STATE,JSON.stringify({
+    currentLevelIdx:STATE.currentLevelIdx,currentQuestionIdx:STATE.currentQuestionIdx,
+    score:STATE.score,levelStartScore:STATE.levelStartScore,
+    totalCorrect:STATE.totalCorrect,totalTimeSpent:STATE.totalTimeSpent
+  }));
+},5000);
+
+(function boot(){
+  var sid=localStorage.getItem(LS_STUDENT);
+  if(sid){STATE.studentId=sid;initGame();}
+  else showLogin();
 })();
 </script>
+</body>
+</html>
 
 <!--
 ╔══════════════════════════════════════════════════════════════════════════╗
-║                    Google Apps Script 後端程式碼                          ║
-║                    請將以下程式碼完整複製到 GAS 編輯器中部署                  ║
+║                    Google Apps Script 後端程式碼 (21 欄位)                  ║
+║               請將以下程式碼完整複製到 GAS 編輯器中部署                       ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 
 部署步驟：
   1. 開啟 Google 試算表 → 擴充功能 → Apps Script
-  2. 將下方所有程式碼貼入編輯器，取代預設內容
-  3. 點擊「部署」→「新增部署」→ 類型選「網頁應用程式」
-     - 執行身分：我
-     - 誰可以存取：任何人
-  4. 複製產生的網頁應用程式網址
-  5. 將網址貼到上方 HTML 檔案中的 WEB_APP_URL 變數
+  2. 貼上以下所有程式碼，取代預設內容
+  3. 部署 → 新增部署 → 網頁應用程式（執行身分：我，存取：任何人）
+  4. 複製部署網址，貼到上方 HTML 的 WEB_APP_URL
+
 
 ═══════════════════════════════════════════════════════════════════════════
-  Sheets 試算表結構（第一列為標題，共 12 欄）
-  ┌──────┬──────────┬──────────┬────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┐
-  │timestamp│studentId│gameTitle│levelNo│questionNo│difficulty│levelType│  target  │  chosen  │isCorrect│timeTaken│hintUsed │
-  └──────┴──────────┴──────────┴────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┴──────────┘
+  Sheets 試算表結構（第一列為標題，共 21 欄）
+
+  A: timestamp        B: studentId       C: gameTitle       D: levelNo
+  E: questionNo       F: difficulty      G: levelType       H: target
+  I: chosenMaterials  J: correctAnswers  K: isCorrect       L: scoreChange
+  M: totalScore       N: timeTaken       O: timeLimit       P: bonusEarned
+  Q: hintUsed         R: attemptType     S: materialsPlaced T: isTimeout
+  U: rank
+
+
+═══════════════════════════════════════════════════════════════════════════
+  教師分析建議（直接在 Sheets 操作）：
+
+  1. 題型弱點分析：選取全部資料 → 插入樞紐分析表
+     - 列：levelType
+     - 值：isCorrect (平均值→正確率)、timeTaken (平均值→平均耗時)
+     - 篩選器：difficulty
+
+  2. 個別學生診斷：Filter by studentId → 查看該生 scoreChange 趨勢
+
+  3. 耗時異常題目：Sort by timeTaken DESC → 找出全班最慢的題目
+
+  4. 提示有效性：Filter hintUsed=TRUE vs FALSE → 比較正確率差異
+
+═══════════════════════════════════════════════════════════════════════════
+  GAS 程式碼開始
 ═══════════════════════════════════════════════════════════════════════════
 
-// ═══════════════════════════════════════════════════════════════════
-// GAS 程式碼開始 (請複製以下所有內容)
-// ═══════════════════════════════════════════════════════════════════
 
 // ---- 設定區 ----
 var CONFIG = {
-  sheetName: '學習紀錄',           // Google Sheet 工作表名稱
-  jsonFileName: 'all_students_logs.json',  // Drive JSON 檔案名稱
-  folderName: '魔法學園_數據備份'    // Drive 資料夾名稱（若不存在會自動建立）
+  sheetName: '答題紀錄',
+  summarySheetName: '學生總分',
+  jsonFileName: 'all_students_logs.json',
+  folderName: '魔法學園_數據備份'
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// doPost(e) — 網頁應用程式唯一入口，接收前端 POST 請求
+// doPost(e) — 接收前端 POST，雙路同步
 // ═══════════════════════════════════════════════════════════════════
 function doPost(e) {
   try {
-    // 1. 解析前端傳來的 12 欄位 JSON
     var payload = JSON.parse(e.postData.contents);
-
-    // 2. 雙路同步儲存
-    appendToSheet(payload);      // 路徑 A：即時寫入試算表
-    appendToDriveJson(payload);  // 路徑 B：累積寫入雲端 JSON
-
-    // 3. 回傳成功訊號給前端
+    appendToSheet(payload);
+    appendToDriveJson(payload);
     return ContentService
       .createTextOutput(JSON.stringify({ status: 'success' }))
       .setMimeType(ContentService.MimeType.JSON);
-
   } catch (err) {
-    // 4. 錯誤處理：回傳失敗原因
     return ContentService
-      .createTextOutput(JSON.stringify({
-        status: 'error',
-        message: err.toString()
-      }))
+      .createTextOutput(JSON.stringify({ status: 'error', message: err.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// doGet(e) — CORS 預檢與健康檢查
-// ═══════════════════════════════════════════════════════════════════
 function doGet(e) {
   return ContentService
-    .createTextOutput(JSON.stringify({
-      status: 'ok',
-      message: '魔法學園 API 運作中',
-      timestamp: new Date().toISOString()
-    }))
+    .createTextOutput(JSON.stringify({ status: 'ok', message: '魔藥煉成所 API', timestamp: new Date().toISOString() }))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// 路徑 A：即時追加到 Google 試算表 (appendRow)
-// 試算表欄位順序與前端 payload 12 欄位完全一致
+// 路徑 A：即時寫入 Google 試算表 (21 欄)
 // ═══════════════════════════════════════════════════════════════════
 function appendToSheet(data) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.sheetName);
-
-  // 若工作表不存在，自動建立並寫入標題列
   if (!sheet) {
     sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(CONFIG.sheetName);
     sheet.appendRow([
-      'timestamp', 'studentId', 'gameTitle', 'levelNo', 'questionNo',
-      'difficulty', 'levelType', 'target', 'chosen', 'isCorrect',
-      'timeTaken', 'hintUsed'
+      'timestamp','studentId','gameTitle','levelNo','questionNo',
+      'difficulty','levelType','target','chosenMaterials','correctAnswers',
+      'isCorrect','scoreChange','totalScore','timeTaken','timeLimit',
+      'bonusEarned','hintUsed','attemptType','materialsPlaced','isTimeout','rank'
     ]);
   }
-
-  // 檢查是否需要寫入標題列 (工作表為空的情況)
   if (sheet.getLastRow() === 0) {
     sheet.appendRow([
-      'timestamp', 'studentId', 'gameTitle', 'levelNo', 'questionNo',
-      'difficulty', 'levelType', 'target', 'chosen', 'isCorrect',
-      'timeTaken', 'hintUsed'
+      'timestamp','studentId','gameTitle','levelNo','questionNo',
+      'difficulty','levelType','target','chosenMaterials','correctAnswers',
+      'isCorrect','scoreChange','totalScore','timeTaken','timeLimit',
+      'bonusEarned','hintUsed','attemptType','materialsPlaced','isTimeout','rank'
     ]);
   }
 
-  // 追加一列數據
   sheet.appendRow([
-    data.timestamp   || '',
-    data.studentId   || '',
-    data.gameTitle   || '',
-    data.levelNo     || '',
-    data.questionNo  || '',
-    data.difficulty  || '',
-    data.levelType   || '',
-    data.target      || '',
-    data.chosen      || '',
-    data.isCorrect   || false,
-    data.timeTaken   || 0,
-    data.hintUsed    || false
+    data.timestamp        || '',
+    data.studentId        || '',
+    data.gameTitle        || '',
+    data.levelNo          || '',
+    data.questionNo       || '',
+    data.difficulty       || '',
+    data.levelType        || '',
+    data.target           || '',
+    data.chosenMaterials  || '',
+    data.correctAnswers   || '',
+    data.isCorrect        || false,
+    data.scoreChange      || 0,
+    data.totalScore       || 0,
+    data.timeTaken        || 0,
+    data.timeLimit        || 0,
+    data.bonusEarned      || false,
+    data.hintUsed         || false,
+    data.attemptType      || '',
+    data.materialsPlaced  || 0,
+    data.isTimeout        || false,
+    data.rank             || ''
   ]);
 
-  // 自動排序：依時間由新到舊（第二欄 timestamp）
   autoSortSheet(sheet);
+  refreshStudentSummary();  // 自動更新彙整表
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// 路徑 B：自動寫入雲端 JSON 檔案 (DriveApp) — 陣列追加，不覆蓋舊資料
+// 路徑 B：累積寫入 Drive JSON
 // ═══════════════════════════════════════════════════════════════════
 function appendToDriveJson(data) {
   var folder = getOrCreateFolder(CONFIG.folderName);
   var file   = getOrCreateJsonFile(folder, CONFIG.jsonFileName);
-
-  // 讀取現有 JSON 內容
-  var existingContent = file.getBlob().getDataAsString();
+  var existing = file.getBlob().getDataAsString();
   var records = [];
-
-  if (existingContent && existingContent.trim() !== '') {
-    try {
-      records = JSON.parse(existingContent);
-      if (!Array.isArray(records)) records = [];
-    } catch (parseErr) {
-      // JSON 格式損壞 → 重建空陣列
-      console.warn('JSON 解析失敗，重建檔案: ' + parseErr.toString());
-      records = [];
-    }
+  if (existing && existing.trim() !== '') {
+    try { records = JSON.parse(existing); if (!Array.isArray(records)) records = []; }
+    catch (err) { records = []; }
   }
-
-  // 將新數據追加到陣列中
   records.push({
-    timestamp:  data.timestamp  || '',
-    studentId:  data.studentId  || '',
-    gameTitle:  data.gameTitle  || '',
-    levelNo:    data.levelNo    || '',
-    questionNo: data.questionNo || '',
-    difficulty: data.difficulty || '',
-    levelType:  data.levelType  || '',
-    target:     data.target     || '',
-    chosen:     data.chosen     || '',
-    isCorrect:  data.isCorrect  || false,
-    timeTaken:  data.timeTaken  || 0,
-    hintUsed:   data.hintUsed   || false,
-    _receivedAt: new Date().toISOString()  // 伺服器接收時間戳
+    timestamp: data.timestamp, studentId: data.studentId, gameTitle: data.gameTitle,
+    levelNo: data.levelNo, questionNo: data.questionNo,
+    difficulty: data.difficulty, levelType: data.levelType,
+    target: data.target, chosenMaterials: data.chosenMaterials,
+    correctAnswers: data.correctAnswers, isCorrect: data.isCorrect,
+    scoreChange: data.scoreChange, totalScore: data.totalScore,
+    timeTaken: data.timeTaken, timeLimit: data.timeLimit,
+    bonusEarned: data.bonusEarned, hintUsed: data.hintUsed,
+    attemptType: data.attemptType, materialsPlaced: data.materialsPlaced,
+    isTimeout: data.isTimeout, rank: data.rank,
+    _receivedAt: new Date().toISOString()
   });
-
-  // 覆寫整個 JSON 檔案（保持完整歷史紀錄）
   file.setContent(JSON.stringify(records, null, 2));
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// 輔助函式：取得或建立 Google Drive 資料夾
+// 自動彙整：學生總分工作表
 // ═══════════════════════════════════════════════════════════════════
-function getOrCreateFolder(folderName) {
-  var folders = DriveApp.getFoldersByName(folderName);
-  if (folders.hasNext()) {
-    return folders.next();
+function refreshStudentSummary() {
+  var dataSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.sheetName);
+  if (!dataSheet || dataSheet.getLastRow() <= 1) return;
+
+  var summarySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.summarySheetName);
+  if (!summarySheet) {
+    summarySheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(CONFIG.summarySheetName);
+    summarySheet.appendRow([
+      'studentId','最新總分','稱號','總題數','答對數','正確率',
+      '平均耗時(秒)','提示使用率','重試次數','超時次數','速度獎勵次數'
+    ]);
   }
-  // 建立在根目錄
-  return DriveApp.createFolder(folderName);
+  // 清除舊彙整（保留標題列）
+  if (summarySheet.getLastRow() > 1) summarySheet.getRange(2, 1, summarySheet.getLastRow()-1, 11).clearContent();
+
+  var data = dataSheet.getDataRange().getValues();
+  if (data.length <= 1) return;
+  var headers = data[0];
+  var idx = {};
+  headers.forEach(function(h,i){ idx[h]=i; });
+
+  // 按 studentId 分組
+  var groups = {};
+  for (var i = 1; i < data.length; i++) {
+    var row = data[i];
+    var sid = row[idx.studentId];
+    if (!sid) continue;
+    if (!groups[sid]) groups[sid] = [];
+    groups[sid].push(row);
+  }
+
+  Object.keys(groups).sort().forEach(function(sid) {
+    var rows = groups[sid];
+    // 排序以取得最新總分
+    rows.sort(function(a,b){ return (b[idx.timestamp]||'').localeCompare(a[idx.timestamp]||''); });
+    var latest = rows[0];
+    var totalScore = latest[idx.totalScore] || 0;
+    var rank = latest[idx.rank] || '';
+    var totalQ = rows.length;
+    var correctQ = rows.filter(function(r){ return r[idx.isCorrect]; }).length;
+    var acc = totalQ > 0 ? Math.round(correctQ/totalQ*100) : 0;
+    var avgTime = totalQ > 0 ? (rows.reduce(function(s,r){return s+(Number(r[idx.timeTaken])||0);},0)/totalQ).toFixed(2) : 0;
+    var hintRate = totalQ > 0 ? Math.round(rows.filter(function(r){return r[idx.hintUsed];}).length/totalQ*100) : 0;
+    var retries = rows.filter(function(r){return r[idx.attemptType]==='retry';}).length;
+    var timeouts = rows.filter(function(r){return r[idx.isTimeout];}).length;
+    var bonuses = rows.filter(function(r){return r[idx.bonusEarned];}).length;
+
+    summarySheet.appendRow([sid,totalScore,rank,totalQ,correctQ,acc+'%',avgTime,hintRate+'%',retries,timeouts,bonuses]);
+  });
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// 輔助函式：在指定資料夾中取得或建立 JSON 檔案
+// 輔助函式
 // ═══════════════════════════════════════════════════════════════════
-function getOrCreateJsonFile(folder, fileName) {
-  var files = folder.getFilesByName(fileName);
-  if (files.hasNext()) {
-    return files.next();
-  }
-  // 建立新檔案，初始內容為空陣列
-  return folder.createFile(fileName, '[]', 'application/json');
+function getOrCreateFolder(name) {
+  var folders = DriveApp.getFoldersByName(name);
+  return folders.hasNext() ? folders.next() : DriveApp.createFolder(name);
 }
-
-// ═══════════════════════════════════════════════════════════════════
-// 輔助函式：自動排序試算表（依 timestamp 欄位由新到舊）
-// ═══════════════════════════════════════════════════════════════════
+function getOrCreateJsonFile(folder, name) {
+  var files = folder.getFilesByName(name);
+  return files.hasNext() ? files.next() : folder.createFile(name, '[]', 'application/json');
+}
 function autoSortSheet(sheet) {
   var lastRow = sheet.getLastRow();
-  if (lastRow <= 2) return; // 只有標題 + 1 筆資料，無需排序
-  var range = sheet.getRange(2, 1, lastRow - 1, 12);
-  range.sort({ column: 1, ascending: false }); // 依第 1 欄 (timestamp) 降序排列
+  if (lastRow <= 2) return;
+  sheet.getRange(2, 1, lastRow-1, 21).sort({ column: 1, ascending: false });
 }
-
-// ═══════════════════════════════════════════════════════════════════
-// 可選功能：清除所有測試資料（手動在 GAS 編輯器中執行此函式）
-// ═══════════════════════════════════════════════════════════════════
 function clearAllData() {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.sheetName);
-  if (sheet) {
-    var lastRow = sheet.getLastRow();
-    if (lastRow > 1) {
-      sheet.getRange(2, 1, lastRow - 1, 12).clearContent();
-    }
-  }
-  // 同時清除 JSON 備份
-  var folder = getOrCreateFolder(CONFIG.folderName);
-  var file   = getOrCreateJsonFile(folder, CONFIG.jsonFileName);
-  file.setContent('[]');
-  Logger.log('所有數據已清除');
+  var s = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.sheetName);
+  if (s && s.getLastRow()>1) s.getRange(2,1,s.getLastRow()-1,21).clearContent();
+  var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.summarySheetName);
+  if (ss && ss.getLastRow()>1) ss.getRange(2,1,ss.getLastRow()-1,11).clearContent();
+  var f = getOrCreateFolder(CONFIG.folderName);
+  var jf = getOrCreateJsonFile(f, CONFIG.jsonFileName);
+  jf.setContent('[]');
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// GAS 程式碼結束
-// ═══════════════════════════════════════════════════════════════════
+═══════════════════════════════════════════════════════════════════════════
+  GAS 程式碼結束
+═══════════════════════════════════════════════════════════════════════════
 -->
-</body>
-</html>
