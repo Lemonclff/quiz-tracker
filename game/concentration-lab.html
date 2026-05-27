@@ -1142,6 +1142,8 @@ function showCompletionScreen() {
   const correct = STATE.totalCorrect;
   const pct     = Math.round((correct / totalQ) * 100);
   const totalSec = STATE.totalSecondsSpent;
+  const mm = Math.floor(totalSec / 60);
+  const ss = Math.floor(totalSec % 60);
 
   $app.innerHTML = `
     ${renderTopBar()}
@@ -1165,7 +1167,7 @@ function showCompletionScreen() {
           <div class="stat-label">正確率</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value">${totalSec.toFixed(1)}秒</div>
+          <div class="stat-value">${mm}分${pad(ss)}秒</div>
           <div class="stat-label">總答題時間</div>
         </div>
       </div>
