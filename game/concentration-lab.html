@@ -1121,54 +1121,67 @@ function appendToDriveJson(data) {
 // 自動彙整：學生總分工作表
 // ═══════════════════════════════════════════════════════════════════
 function refreshStudentSummary() {
-  var dataSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.sheetName);
-  if (!dataSheet || dataSheet.getLastRow() <= 1) return;
+  try {
+    var dataSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.sheetName);
+    if (!dataSheet || dataSheet.getLastRow() <= 1) return;
 
-  var summarySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.summarySheetName);
-  if (!summarySheet) {
-    summarySheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(CONFIG.summarySheetName);
-    summarySheet.appendRow([
-      'studentId','最新總分','稱號','總題數','答對數','正確率',
-      '平均耗時(秒)','提示使用率','重試次數','超時次數','速度獎勵次數'
-    ]);
+    var summarySheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.summarySheetName);
+    if (!summarySheet) {
+      summarySheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(CONFIG.summarySheetName);
+      summarySheet.appendRow([
+        'studentId','最新總分','稱號','總題數','答對數','正確率',
+        '平均耗時(秒)','提示使用率','重試次數','超時次數','速度獎勵次數'
+      ]);
+    }
+    // 清除舊彙整（保留標題列）
+    if (summarySheet.getLastRow() > 1) summarySheet.getRange(2, 1, summarySheet.getLastRow()-1, 11).clearContent();
+
+    var data = dataSheet.getDataRange().getValues();
+    if (data.length <= 1) return;
+    var headers = data[0];
+    var idx = {};
+    for (var i = 0; i < headers.length; i++) { idx[headers[i]] = i; }
+
+    // 按 studentId 分組
+    var groups = {};
+    for (var i = 1; i < data.length; i++) {
+      var row = data[i];
+      var sid = row[idx.studentId];
+      if (!sid) continue;
+      if (!groups[sid]) groups[sid] = [];
+      groups[sid].push(row);
+    }
+
+    var keys = Object.keys(groups);
+    keys.sort();
+    for (var k = 0; k < keys.length; k++) {
+      var sid = keys[k];
+      var rows = groups[sid];
+      rows.sort(function(a,b){ return (b[idx.timestamp]||'').toString().localeCompare((a[idx.timestamp]||'').toString()); });
+      var latest = rows[0];
+      var totalScore = latest[idx.totalScore] || 0;
+      var rank = latest[idx.rank] || '';
+      var totalQ = rows.length;
+      var correctQ = 0;
+      for (var r = 0; r < rows.length; r++) { if (rows[r][idx.isCorrect]) correctQ++; }
+      var acc = totalQ > 0 ? Math.round(correctQ/totalQ*100) : 0;
+      var sumTime = 0;
+      for (var r2 = 0; r2 < rows.length; r2++) { sumTime += Number(rows[r2][idx.timeTaken]) || 0; }
+      var avgTime = totalQ > 0 ? (sumTime/totalQ).toFixed(2) : 0;
+      var hintCount = 0, retryCount = 0, timeoutCount = 0, bonusCount = 0;
+      for (var r3 = 0; r3 < rows.length; r3++) {
+        if (rows[r3][idx.hintUsed]) hintCount++;
+        if (rows[r3][idx.attemptType] === 'retry') retryCount++;
+        if (rows[r3][idx.isTimeout]) timeoutCount++;
+        if (rows[r3][idx.bonusEarned]) bonusCount++;
+      }
+      var hintRate = totalQ > 0 ? Math.round(hintCount/totalQ*100) : 0;
+
+      summarySheet.appendRow([sid,totalScore,rank,totalQ,correctQ,acc+'%',avgTime,hintRate+'%',retryCount,timeoutCount,bonusCount]);
+    }
+  } catch(err) {
+    Logger.log('refreshStudentSummary 錯誤: ' + err.toString());
   }
-  // 清除舊彙整（保留標題列）
-  if (summarySheet.getLastRow() > 1) summarySheet.getRange(2, 1, summarySheet.getLastRow()-1, 11).clearContent();
-
-  var data = dataSheet.getDataRange().getValues();
-  if (data.length <= 1) return;
-  var headers = data[0];
-  var idx = {};
-  headers.forEach(function(h,i){ idx[h]=i; });
-
-  // 按 studentId 分組
-  var groups = {};
-  for (var i = 1; i < data.length; i++) {
-    var row = data[i];
-    var sid = row[idx.studentId];
-    if (!sid) continue;
-    if (!groups[sid]) groups[sid] = [];
-    groups[sid].push(row);
-  }
-
-  Object.keys(groups).sort().forEach(function(sid) {
-    var rows = groups[sid];
-    // 排序以取得最新總分
-    rows.sort(function(a,b){ return (b[idx.timestamp]||'').localeCompare(a[idx.timestamp]||''); });
-    var latest = rows[0];
-    var totalScore = latest[idx.totalScore] || 0;
-    var rank = latest[idx.rank] || '';
-    var totalQ = rows.length;
-    var correctQ = rows.filter(function(r){ return r[idx.isCorrect]; }).length;
-    var acc = totalQ > 0 ? Math.round(correctQ/totalQ*100) : 0;
-    var avgTime = totalQ > 0 ? (rows.reduce(function(s,r){return s+(Number(r[idx.timeTaken])||0);},0)/totalQ).toFixed(2) : 0;
-    var hintRate = totalQ > 0 ? Math.round(rows.filter(function(r){return r[idx.hintUsed];}).length/totalQ*100) : 0;
-    var retries = rows.filter(function(r){return r[idx.attemptType]==='retry';}).length;
-    var timeouts = rows.filter(function(r){return r[idx.isTimeout];}).length;
-    var bonuses = rows.filter(function(r){return r[idx.bonusEarned];}).length;
-
-    summarySheet.appendRow([sid,totalScore,rank,totalQ,correctQ,acc+'%',avgTime,hintRate+'%',retries,timeouts,bonuses]);
-  });
 }
 
 // ═══════════════════════════════════════════════════════════════════
