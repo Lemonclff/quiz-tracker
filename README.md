@@ -6,7 +6,7 @@
 
 | 遊戲 | 網址 | 關卡 | 題數 |
 |------|------|------|------|
-| **濃度調配課** (新版) | [concentration-lab.html](https://lemonclff.github.io/quiz-tracker/game/concentration-lab.html) | 3 關 | 4 題 |
+| **濃度調配課** (新版) | [concentration-lab.html](https://lemonclff.github.io/quiz-tracker/game/concentration-lab.html) | 3 關 | 12 題 |
 | 濃度大挑戰 (舊版) | [magic-school.html](https://lemonclff.github.io/quiz-tracker/game/magic-school.html) | 3 關 | 3 題 |
 
 ### 濃度調配課 (新版) 特色
@@ -20,9 +20,17 @@
 
 | 密碼 | 關卡 |
 |------|------|
-| `magic123` | 第 1 關 → 第 2 關 |
-| `lucky777` | 第 2 關 → 第 3 關 |
-| `clear2026` | 第 3 關 → 結算 |
+| `elixir456` | 第 1 關 (分數與基礎混合) → 第 2 關 |
+| `alchemist789` | 第 2 關 (百分率基礎) → 第 3 關 |
+| `wizardMASTER` | 第 3 關 (百分率與比例應用) → 結算 |
+
+### 關卡結構
+
+| 關卡 | 難度 | 類型 | 題數 |
+|------|------|------|------|
+| 第 1 關 | 簡單 | 分數與基礎混合 | 4 題 |
+| 第 2 關 | 中等 | 百分率基礎 (%) | 4 題 |
+| 第 3 關 | 困難 | 百分率與比例應用 | 4 題 |
 
 ---
 
