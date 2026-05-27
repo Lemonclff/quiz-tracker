@@ -975,12 +975,12 @@ setInterval(function(){
 ═══════════════════════════════════════════════════════════════════════════
   Sheets 試算表結構（第一列為標題，共 22 欄）
 
-  A: requestId        B: timestamp        C: studentId       D: gameTitle
-  E: levelNo          F: questionNo       G: difficulty      H: levelType
-  I: target           J: chosenMaterials  K: correctAnswers  L: isCorrect
-  M: scoreChange      N: totalScore       O: timeTaken       P: timeLimit
-  Q: bonusEarned      R: hintUsed         S: attemptType     T: materialsPlaced
-  U: isTimeout        V: rank
+  A: timestamp        B: studentId       C: gameTitle       D: levelNo
+  E: questionNo       F: difficulty      G: levelType       H: target
+  I: chosenMaterials  J: correctAnswers  K: isCorrect       L: scoreChange
+  M: totalScore       N: timeTaken       O: timeLimit       P: bonusEarned
+  Q: hintUsed         R: attemptType     S: materialsPlaced T: isTimeout
+  U: rank             V: requestId       （去重識別碼）
 
 
 ═══════════════════════════════════════════════════════════════════════════
@@ -1043,14 +1043,15 @@ function doGet(e) {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// 路徑 A：即時寫入 Google 試算表 (22 欄，含 requestId)
+// 路徑 A：即時寫入 Google 試算表 (22 欄，requestId 在最後)
 // ═══════════════════════════════════════════════════════════════════
 function appendToSheet(data) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.sheetName);
-  var headers = ['requestId','timestamp','studentId','gameTitle','levelNo','questionNo',
+  var headers = ['timestamp','studentId','gameTitle','levelNo','questionNo',
       'difficulty','levelType','target','chosenMaterials','correctAnswers',
       'isCorrect','scoreChange','totalScore','timeTaken','timeLimit',
-      'bonusEarned','hintUsed','attemptType','materialsPlaced','isTimeout','rank'];
+      'bonusEarned','hintUsed','attemptType','materialsPlaced','isTimeout','rank',
+      'requestId'];
   if (!sheet) {
     sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet(CONFIG.sheetName);
     sheet.appendRow(headers);
@@ -1060,7 +1061,6 @@ function appendToSheet(data) {
   }
 
   sheet.appendRow([
-    data.requestId        || '',
     data.timestamp        || '',
     data.studentId        || '',
     data.gameTitle        || '',
@@ -1081,7 +1081,8 @@ function appendToSheet(data) {
     data.attemptType      || '',
     data.materialsPlaced  || 0,
     data.isTimeout        || false,
-    data.rank             || ''
+    data.rank             || '',
+    data.requestId        || ''
   ]);
 
   autoSortSheet(sheet);
@@ -1184,7 +1185,7 @@ function getOrCreateJsonFile(folder, name) {
 function autoSortSheet(sheet) {
   var lastRow = sheet.getLastRow();
   if (lastRow <= 2) return;
-  sheet.getRange(2, 1, lastRow-1, 22).sort({ column: 2, ascending: false }); // 依 timestamp (B欄) 降序
+  sheet.getRange(2, 1, lastRow-1, 22).sort({ column: 1, ascending: false }); // 依 timestamp (A欄) 降序
 }
 function clearAllData() {
   var s = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.sheetName);
@@ -1202,9 +1203,9 @@ function clearAllData() {
 function isDuplicateRequest(requestId) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.sheetName);
   if (!sheet || sheet.getLastRow() <= 1) return false;
-  // 只檢查最近 200 列以維持效能
+  // 只檢查最近 200 列以維持效能，requestId 在 V 欄 (第 22 欄)
   var startRow = Math.max(2, sheet.getLastRow() - 199);
-  var data = sheet.getRange(startRow, 1, sheet.getLastRow() - startRow + 1, 1).getValues();
+  var data = sheet.getRange(startRow, 22, sheet.getLastRow() - startRow + 1, 1).getValues();
   for (var i = 0; i < data.length; i++) {
     if (data[i][0] === requestId) return true;
   }
