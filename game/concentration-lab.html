@@ -584,8 +584,11 @@ function renderGame(){
   STATE.questionStartTime=Date.now();
   STATE.hintShown=false;
   STATE.hintTimer=null;
-  startTimer();
-  if(lv.hintAutoSec>0) STATE.hintTimer=setTimeout(showHint,lv.hintAutoSec*1000);
+  // 只在計時器未執行時才啟動（避免選材料/倒掉重練時重置倒數）
+  if(!STATE.timerInterval){
+    startTimer();
+    if(lv.hintAutoSec>0) STATE.hintTimer=setTimeout(showHint,lv.hintAutoSec*1000);
+  }
 }
 
 // ═══════════════════════════════════════════════════════
@@ -812,6 +815,7 @@ async function flushPending(){
 // ═══════════════════════════════════════════════════════
 // 密碼驗證 + 重試
 function showPasswordGate(){
+  stopTimer(); // 防禦：確保計時器已停止
   var lv=getLevel();
   var html=
     '<div class="modal-overlay show" id="pw-modal">'+
@@ -841,6 +845,7 @@ function showPasswordGate(){
 }
 
 function restartCurrentLevel(){
+  stopTimer();
   STATE.currentQuestionIdx=0;
   STATE.selectedMaterials=[];
   STATE.score=STATE.levelStartScore;
@@ -850,6 +855,7 @@ function restartCurrentLevel(){
 }
 
 function advanceToNextLevel(){
+  stopTimer();
   STATE.currentLevelIdx++;
   STATE.currentQuestionIdx=0;
   STATE.selectedMaterials=[];
@@ -862,6 +868,7 @@ function advanceToNextLevel(){
 // ═══════════════════════════════════════════════════════
 // 完成畫面
 function showCompletion(){
+  stopTimer();
   var app=document.getElementById('app');
   var totalQ=getTotalQ(), correct=STATE.totalCorrect;
   var pct=Math.round((correct/totalQ)*100);
@@ -884,6 +891,7 @@ function showCompletion(){
 }
 
 function restartGame(){
+  stopTimer();
   STATE.currentLevelIdx=0;STATE.currentQuestionIdx=0;STATE.selectedMaterials=[];
   STATE.score=0;STATE.levelStartScore=0;STATE.totalCorrect=0;STATE.totalAnswered=0;
   STATE.totalTimeSpent=0;STATE.attemptType='first';STATE.isLocked=false;
